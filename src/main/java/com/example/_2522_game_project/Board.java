@@ -48,5 +48,12 @@ public class Board {
         }
     }
 
-    private boolean populateLimes() { return false; }
+    private boolean populateLimes() {
+        if (numLimes == 0 ) {
+            return false;
+        }
+        /* TODO: return true with 20%? chance. */
+        /* TODO: need to think about the case that when it doesn't generate the specific number of limes */
+        return true;
+    }
 }
