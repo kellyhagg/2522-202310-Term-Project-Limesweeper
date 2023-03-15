@@ -5,8 +5,8 @@ package com.example._2522_game_project;
  * @version 1
  */
 public class Board {
-    private int row;
-    private int col;
+    private final int row;
+    private final int col;
     private Cell[][] board;
     private int numLimes;
 
@@ -37,4 +37,16 @@ public class Board {
         /*TODO: if minLimes is greater than or equal to totalCells, create an exception. */
         this.numLimes = minLimes;
     }
+
+    public void createBoard() {
+        boolean isLime;
+        for (int row = 0; row < this.row; row ++) {
+            for (int col = 0; col < this.col; col ++) {
+                isLime = this.populateLimes();
+                this.board[row][col] = new Cell(StateType.UPOPENED, isLime);
+            }
+        }
+    }
+
+    private boolean populateLimes() { return false; }
 }
