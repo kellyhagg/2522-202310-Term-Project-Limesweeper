@@ -13,4 +13,13 @@ public class Cell {
         this.state = state;
         this.isLime = isLime;
     }
+
+    public void openCell() {
+        if (this.isLime) {
+            /* TODO: End game */
+        }
+        this.state = StateType.OPENED;
+
+        /* TODO: open neighbourCell and display the number */
+    }
 }
