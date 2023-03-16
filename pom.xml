@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example._2522_game_project/com.example._2522_game_project.HelloApplication
+                            <mainClass>com.example._2522_game_project/com.example._2522_game_project.LimesweeperApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
