@@ -24,6 +24,7 @@ public class Controller {
         limeView.setFitWidth(14);
         limeView.setFitHeight(14);
         btn.setText("");
-        btn.setGraphic(limeView); // how an image is loaded in the cell (I need to adjust the size down)
+        btn.setGraphic(limeView);
+        //btn.setDisable(true); //pending. It's making the styling faint, so I need to update css first
     }
 }
