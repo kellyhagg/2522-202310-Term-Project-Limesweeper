@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class LimesweeperApplication extends Application {
-    Button button;
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LimesweeperApplication.class.getResource("hard-limesweeper.fxml"));
