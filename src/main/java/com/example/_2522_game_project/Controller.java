@@ -12,11 +12,18 @@ public class Controller {
 
     @FXML
     protected void onButtonClick(ActionEvent event) throws IOException {
-        Image lime = new Image(LimesweeperApplication.class.getResource("lime.png").openStream());
-        ImageView limeView = new ImageView(lime);
         Button btn = (Button) event.getSource();
         String id = btn.getId();
-        btn.setText("x"); // how to set the clicked button to another text
-//        btn.setGraphic(limeView); // how an image is loaded in the cell (I need to adjust the size down)
+        setToLime(btn);
+    }
+
+    @FXML
+    protected void setToLime(Button btn) throws IOException {
+        Image limeImage = new Image(LimesweeperApplication.class.getResource("lime.png").openStream());
+        ImageView limeView = new ImageView(limeImage);
+        limeView.setFitWidth(14);
+        limeView.setFitHeight(14);
+        btn.setText("");
+        btn.setGraphic(limeView); // how an image is loaded in the cell (I need to adjust the size down)
     }
 }
