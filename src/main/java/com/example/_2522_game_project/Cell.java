@@ -1,5 +1,6 @@
 package com.example._2522_game_project;
 
+<<<<<<< HEAD
 /**
  * @author Eunjeong (Alice) Hur, Kelly Hagg
  * @version 1
@@ -22,4 +23,7 @@ public class Cell {
 
         /* TODO: open neighbourCell and display the number */
     }
+=======
+public class Cell {
+>>>>>>> origin/master
 }

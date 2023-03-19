@@ -1,5 +1,6 @@
 package com.example._2522_game_project;
 
+<<<<<<< HEAD
 /**
  * @author Eunjeong (Alice) Hur, Kelly Hagg
  * @version 1
@@ -56,4 +57,7 @@ public class Board {
         /* TODO: need to think about the case that when it doesn't generate the specific number of limes */
         return true;
     }
+=======
+public class Board {
+>>>>>>> origin/master
 }
