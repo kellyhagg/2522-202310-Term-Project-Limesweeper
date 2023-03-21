@@ -15,7 +15,7 @@ public enum StateType {
     /**
      * Unopened state
      */
-    UPOPENED,
+    UNOPENED,
 
     /**
      * Flagged state
