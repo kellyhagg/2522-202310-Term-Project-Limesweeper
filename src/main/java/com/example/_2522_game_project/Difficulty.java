@@ -22,4 +22,4 @@ public enum Difficulty {
      */
     HARD
 }
-}
+
