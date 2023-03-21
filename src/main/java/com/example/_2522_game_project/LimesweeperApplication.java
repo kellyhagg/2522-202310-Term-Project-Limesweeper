@@ -16,11 +16,11 @@ import java.io.IOException;
 
 public class LimesweeperApplication extends Application {
 
-    public static final int CELL_SIZE = 20;
+    public static final int CELL_SIZE = 24;
 
     private Pane createPane() {
         Pane pane = new Pane();
-        pane.setPrefSize(800, 600);
+        pane.setPrefSize(720, 384);
 
         return pane;
     }
