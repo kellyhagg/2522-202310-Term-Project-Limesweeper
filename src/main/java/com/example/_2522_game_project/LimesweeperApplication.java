@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,10 +15,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class LimesweeperApplication extends Application {
+
+    public static final int CELL_SIZE = 20;
+
+    private Pane createPane() {
+        Pane pane = new Pane();
+        pane.setPrefSize(800, 600);
+
+        return pane;
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LimesweeperApplication.class.getResource("hard-limesweeper.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 740, 450);
+//        FXMLLoader fxmlLoader = new FXMLLoader(LimesweeperApplication.class.getResource("hard-limesweeper.fxml"));
+//        Scene scene = new Scene(fxmlLoader.load(), 740, 450);
+        Scene scene = new Scene(createPane());
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
