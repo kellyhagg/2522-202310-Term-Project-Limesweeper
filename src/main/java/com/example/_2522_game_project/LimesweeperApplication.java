@@ -5,22 +5,26 @@ import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Utility class to run the Limesweeper application.
+ *
+ * @author Eunjeong (Alice) Hur, Kelly Hagg
+ * @version 230321
+ */
 public class LimesweeperApplication extends Application {
 
     private Pane createContentPane() {
         Pane pane = new Pane();
         pane.setPrefSize(810, 432); // hardcoded for now, Kelly to make dynamic with each difficulty
         pane.setStyle("-fx-background-color: green;");
-        Board board = new Board(30, 16); // hardcoded here for now (likely to move)
+        Board board = new Board(30, 16, 99); // hardcoded here for now (likely to move)
         Cell[][] boardGrid = board.getBoardGrid();
-        for (int columns = 0; columns < board.getRows(); columns++) {
-            for (int rows = 0; rows < board.getColumns(); rows++) {
+        for (int columns = 0; columns < board.getColumns(); columns++) {
+            for (int rows = 0; rows < board.getRows(); rows++) {
                 pane.getChildren().add(boardGrid[columns][rows]);
             }
         }
         return pane;
-
-
     }
 
     @Override
