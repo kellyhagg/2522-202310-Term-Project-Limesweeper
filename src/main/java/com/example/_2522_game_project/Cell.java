@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 public class Cell extends StackPane {
     public static final int CELL_SIZE = 24;
     public static final int PANE_SIZE = 27;
-    public static final Rectangle outline = new Rectangle(CELL_SIZE, CELL_SIZE);
+    public final Rectangle outline = new Rectangle(CELL_SIZE, CELL_SIZE);
     private final int row;
     private final int column;
     private boolean isLime;
