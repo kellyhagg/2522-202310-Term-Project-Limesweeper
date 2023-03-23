@@ -52,13 +52,14 @@ public class Board {
                 if (boardGrid[row][col].isLime()) {
                     continue;
                 }
-                int count = 0;
+                int count;
                 if (row == 0) { // Check Top Line
                     count = checkTopLine(col);
                 } else if (row == this.rows-1) { //Check Bottom Line
                     count = checkBottomLine(col);
+                } else {
+                    count = checkMiddle(row, col); // Check Middle
                 }
-                /*TODO: Check Middles */
                 boardGrid[row][col].setNeighbourLimes(count);
             }
         }
@@ -135,6 +136,59 @@ public class Board {
         if (boardGrid[this.rows-2][col].isLime()) {
             count += 1;
         }
+        return count;
+    }
+
+    private int checkMiddle(int row, int col){
+        int count = 0;
+        int[] points = new int[] {
+                -1, -1,
+                -1, 0,
+                -1, 1,
+                0, -1,
+                0, 1,
+                1, -1,
+                1, 0,
+                1, 1
+        };
+        int[] firstCol = new int[] {
+                -1, 0,
+                -1, 1,
+                0, 1,
+                1, 0,
+                1, 1
+        };
+
+        int [] lastCol = new int[] {
+                -1, 0,
+                -1, -1,
+                0, -1,
+                1, -1,
+                1, 0
+        };
+        if (col == 0) {
+            for (int i = 0; i < firstCol.length - 1; i++) {
+                if (boardGrid[row + firstCol[i]][col + firstCol[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
+            }
+        } else if (col == this.columns - 1) {
+            for (int i = 0; i < lastCol.length - 1; i++) {
+                if (boardGrid[row + lastCol[i]][col + lastCol[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
+            }
+        } else {
+            for (int i = 0; i < points.length - 1; i++) {
+                if (boardGrid[row + points[i]][col + points[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
+            }
+        }
+
         return count;
     }
 
