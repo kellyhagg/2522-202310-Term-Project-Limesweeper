@@ -31,6 +31,8 @@ public class Board {
             }
         }
         populateLimes(columns, rows, numLimes);
+        setNeighbourLimes();
+        System.out.println("testing");
     }
 
     private void populateLimes(int columns, int rows, int numLimes) {
@@ -47,46 +49,48 @@ public class Board {
     }
 
     private void setNeighbourLimes() {
-        for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < this.columns; col++) {
-                if (boardGrid[row][col].isLime()) {
+        for (int col = 0; col < this.columns; col++) {
+            for (int row = 0; row < this.rows; row++) {
+
+                if (boardGrid[col][row].isLime()) {
                     continue;
                 }
                 int count;
-                if (row == 0) { // Check Top Line
-                    count = checkTopLine(col);
-                } else if (row == this.rows-1) { //Check Bottom Line
-                    count = checkBottomLine(col);
-                } else {
-                    count = checkMiddle(row, col); // Check Middle
+                if (col == 0) { // Check Top Line
+                    count = checkLeftLine(row);
                 }
-                boardGrid[row][col].setNeighbourLimes(count);
+//             else if (col == this.columns-1) { //Check Bottom Line
+//                    count = checkBottomLine(row);
+//                } else {
+//                    count = checkMiddle(col, row); // Check Middle
+//                }
+//                boardGrid[row][col].setNeighbourLimes(count);
             }
         }
     }
 
-    private int checkTopLine(int col) {
+    private int checkLeftLine(int col) {
         int count = 0;
-        int [] point = new int[] {0, -1, 1, -1, 1, 1, 0, 1, 1, 0};
-        int[] firstCol = new int[] {0, 1, 1, 1, 1, 0};
-        int [] lastCol = new int[] {0, -1, 1, -1, 1, 0};
-        if (col == 0) { // When the cell is top-left corner
-            for (int i = 0; i < firstCol.length - 1; i++) {
-                if (boardGrid[firstCol[i]][col + firstCol[i+1]].isLime()) {
+        int [] point = new int[] {-1, 0, -1, 1, 0, 1, 1, 1, 1, 0};
+        int[] leftTop = new int[] {0, 1, 1, 1, 1, 0};
+        int [] leftBottom = new int[] {-1, 0, -1, 1, 0, 1};
+        if (col == 0) {
+            for (int i = 0; i < leftTop.length - 1; i++) {
+                if (boardGrid[col + leftTop[i]][leftTop[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
-        } else if (col == this.columns -1) { // When the cell is top-right corner
-            for (int i = 0; i < lastCol.length - 1; i++) {
-                if (boardGrid[lastCol[i]][col + lastCol[i+1]].isLime()) {
+        } else if (col == this.rows -1) {
+            for (int i = 0; i < leftBottom.length - 1; i++) {
+                if (boardGrid[col + leftBottom[i]][leftBottom[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
         } else {
             for (int i = 0; i < point.length - 1; i++) {
-                if (boardGrid[point[i]][col + point[i+1]].isLime()) {
+                if (boardGrid[col  + point[i]][point[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
