@@ -67,36 +67,30 @@ public class Board {
 
     private int checkTopLine(int col) {
         int count = 0;
+        int [] point = new int[] {0, -1, 1, -1, 1, 1, 0, 1, 1, 0};
+        int[] firstCol = new int[] {0, 1, 1, 1, 1, 0};
+        int [] lastCol = new int[] {0, -1, 1, -1, 1, 0};
         if (col == 0) { // When the cell is top-left corner
-            if (boardGrid[0][col+1].isLime()) {
-                count += 1;
-            }
-            if (boardGrid[1][col+1].isLime()) {
-                count += 1;
+            for (int i = 0; i < firstCol.length - 1; i++) {
+                if (boardGrid[firstCol[i]][col + firstCol[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
             }
         } else if (col == this.columns -1) { // When the cell is top-right corner
-            if (boardGrid[0][col - 1].isLime()) {
-                count += 1;
-            }
-            if (boardGrid[1][col-1].isLime()) {
-                count += 1;
+            for (int i = 0; i < lastCol.length - 1; i++) {
+                if (boardGrid[lastCol[i]][col + lastCol[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
             }
         } else {
-            if (boardGrid[0][col-1].isLime()) {
-                count += 1;
+            for (int i = 0; i < point.length - 1; i++) {
+                if (boardGrid[point[i]][col + point[i+1]].isLime()) {
+                    count += 1;
+                }
+                i += 1;
             }
-            if (boardGrid[1][col - 1].isLime()) {
-                count += 1;
-            }
-            if (boardGrid[1][col + 1].isLime()) {
-                count += 1;
-            }
-            if (boardGrid[0][col+1].isLime()) {
-                count += 1;
-            }
-        }
-        if (boardGrid[1][col].isLime()) {
-            count += 1;
         }
         return count;
     }
