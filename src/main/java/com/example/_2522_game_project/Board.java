@@ -46,6 +46,60 @@ public class Board {
         }
     }
 
+    private void setNeighbourLimes() {
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.columns; col++) {
+                if (boardGrid[row][col].isLime()) {
+                    continue;
+                }
+                int count = 0;
+                if (row == 0) { // Check Top Line
+                    count = checkTopLine(col);
+                }
+                /*TODO: Check Bottom Line and Check Middles */
+                boardGrid[row][col].setNeighbourLimes(count);
+            }
+        }
+    }
+
+    private int checkTopLine(int col) {
+        int count = 0;
+        if (col == 0) { // When the cell is top-left corner
+            if (boardGrid[0][col+1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[1][col+1].isLime()) {
+                count += 1;
+            }
+        } else if (col == this.columns) { // When the cell is top-right corner
+            if (boardGrid[0][col - 1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[1][col-1].isLime()) {
+                count += 1;
+            }
+        } else {
+            if (boardGrid[0][col-1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[1][col - 1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[1][col + 1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[0][col+1].isLime()) {
+                count += 1;
+            }
+        }
+        if (boardGrid[1][col].isLime()) {
+            count += 1;
+        }
+
+        return count;
+    }
+
+
     public int getRows() {
         return rows;
     }

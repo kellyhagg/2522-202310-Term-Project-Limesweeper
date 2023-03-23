@@ -18,6 +18,7 @@ public class Cell extends StackPane {
     private final int column;
     private boolean isLime;
     private StateType state;
+    private int neighbourLimes;
 
     public Cell(int column, int row) {
         this.row = row;
@@ -47,4 +48,6 @@ public class Cell extends StackPane {
     public void setState(StateType state) {
         this.state = state;
     }
+
+    public void setNeighbourLimes(int neighbourLimes) { this.neighbourLimes = neighbourLimes; }
 }
