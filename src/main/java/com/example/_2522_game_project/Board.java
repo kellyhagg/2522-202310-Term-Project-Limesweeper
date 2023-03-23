@@ -55,8 +55,10 @@ public class Board {
                 int count = 0;
                 if (row == 0) { // Check Top Line
                     count = checkTopLine(col);
+                } else if (row == this.rows-1) { //Check Bottom Line
+                    count = checkBottomLine(col);
                 }
-                /*TODO: Check Bottom Line and Check Middles */
+                /*TODO: Check Middles */
                 boardGrid[row][col].setNeighbourLimes(count);
             }
         }
@@ -71,7 +73,7 @@ public class Board {
             if (boardGrid[1][col+1].isLime()) {
                 count += 1;
             }
-        } else if (col == this.columns) { // When the cell is top-right corner
+        } else if (col == this.columns -1) { // When the cell is top-right corner
             if (boardGrid[0][col - 1].isLime()) {
                 count += 1;
             }
@@ -95,7 +97,44 @@ public class Board {
         if (boardGrid[1][col].isLime()) {
             count += 1;
         }
+        return count;
+    }
 
+    private int checkBottomLine(int col) {
+        int count = 0;
+        if (col == 0) {
+            if (boardGrid[this.rows - 2][col + 1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[this.rows -1][col+1].isLime()) {
+                count += 1;
+            }
+        } else if (col == this.columns-1) {
+            if (boardGrid[this.rows - 2][col - 1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[this.rows -1][col-1].isLime()) {
+                count += 1;
+            }
+        } else {
+            if (boardGrid[this.rows -1][col-1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[this.rows-2][col-1].isLime()) {
+                count += 1;
+            }
+
+            if (boardGrid[this.rows-2][col+1].isLime()) {
+                count += 1;
+            }
+            if (boardGrid[this.rows-1][col+1].isLime()) {
+                count += 1;
+            }
+        }
+
+        if (boardGrid[this.rows-2][col].isLime()) {
+            count += 1;
+        }
         return count;
     }
 
