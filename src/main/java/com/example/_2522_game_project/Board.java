@@ -61,9 +61,9 @@ public class Board {
                 } else if (col == this.columns-1) { //Check Right Line
                     count = checkRightLine(row);
                 }
-//                else {
-//                    count = checkMiddle(col, row); // Check Middle
-//                }
+                else {
+                    count = checkMiddle(row, col); // Check Middle
+                }
 //                boardGrid[row][col].setNeighbourLimes(count);
             }
         }
@@ -133,55 +133,34 @@ public class Board {
     }
 
     private int checkMiddle(int row, int col){
-        int count = 0;
-        int[] points = new int[] {
-                -1, -1,
-                -1, 0,
-                -1, 1,
-                0, -1,
-                0, 1,
-                1, -1,
-                1, 0,
-                1, 1
-        };
-        int[] firstCol = new int[] {
-                -1, 0,
-                -1, 1,
-                0, 1,
-                1, 0,
-                1, 1
-        };
 
-        int [] lastCol = new int[] {
-                -1, 0,
-                -1, -1,
-                0, -1,
-                1, -1,
-                1, 0
-        };
-        if (col == 0) {
-            for (int i = 0; i < firstCol.length - 1; i++) {
-                if (boardGrid[row + firstCol[i]][col + firstCol[i+1]].isLime()) {
+        int count = 0;
+        int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
+        int[] firstRow = new int[] {-1, 0, -1, 1, 0, 1, 1, 0, 1, 1};
+        int [] lastRow = new int[] {-1, 0, -1, -1, 0, -1, 1, -1, 1, 0};
+
+        if (row == 0) {
+            for (int i = 0; i < firstRow.length - 1; i++) {
+                if (boardGrid[col + firstRow[i]][row + firstRow[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
-        } else if (col == this.columns - 1) {
-            for (int i = 0; i < lastCol.length - 1; i++) {
-                if (boardGrid[row + lastCol[i]][col + lastCol[i+1]].isLime()) {
+        } else if (row == this.rows - 1) {
+            for (int i = 0; i < lastRow.length - 1; i++) {
+                if (boardGrid[col + lastRow[i]][row + lastRow[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
         } else {
             for (int i = 0; i < points.length - 1; i++) {
-                if (boardGrid[row + points[i]][col + points[i+1]].isLime()) {
+                if (boardGrid[col + points[i]][row + points[i+1]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
         }
-
         return count;
     }
 
