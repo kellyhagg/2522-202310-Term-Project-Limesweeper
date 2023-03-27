@@ -29,7 +29,7 @@ public class LimesweeperApplication extends Application {
     private static void revealAllLimes() throws IOException {
         for (Cell[] cells : board.getBoardGrid()) {
             for (Cell cell : cells) {
-                if (cell.isLime()) {
+                if (cell.isLime() && cell.getState() != StateType.FLAGGED) {
                     Image image = new Image(Objects.requireNonNull(
                             LimesweeperApplication.class.getResource("lime.png")).openStream());
                     ImageView flagView = new ImageView(image);
