@@ -43,15 +43,16 @@ public class Cell extends StackPane {
 
         setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
-            if (btn == MouseButton.PRIMARY) {
+            if (btn == MouseButton.PRIMARY && state == StateType.UNOPENED) {
                 try {
                     open();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             } else if (btn == MouseButton.SECONDARY) {
+                boolean flagged = state == StateType.FLAGGED;
                 try {
-                    flag();
+                    flag(flagged);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -67,16 +68,26 @@ public class Cell extends StackPane {
         }
     }
 
-    public void flag() throws IOException {
+    public void flag(final boolean flagged) throws IOException {
         this.state = StateType.FLAGGED;
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("flag.png")).openStream());
+        Image image = new Image(LimesweeperApplication.class.getResource("flag.png").openStream());
         ImageView flagView = new ImageView(image);
         flagView.setFitWidth(CELL_SIZE - 1);
         flagView.setFitHeight(CELL_SIZE - 1);
-        getChildren().add(flagView);
+        if (!flagged) {
+            getChildren().add(flagView);
+        } else {
+            this.state = StateType.UNOPENED;
+            getChildren().clear();
+            outline.setFill(Color.rgb(221,232,164));
+            outline.setStroke(Color.rgb(134,183,62));
+            getChildren().addAll(outline);
+        }
     }
 
+    public void removeFlag() {
+
+    }
     public boolean isLime() {
         return isLime;
     }
