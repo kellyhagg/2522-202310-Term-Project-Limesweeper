@@ -3,6 +3,7 @@ package com.example._2522_game_project;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 /**
  * The cell in a board.
@@ -19,6 +20,7 @@ public class Cell extends StackPane {
     private boolean isLime;
     private StateType state;
     private int neighbourLimes;
+    private Text value = new Text();
 
     public Cell(int column, int row) {
         this.row = row;
@@ -27,10 +29,23 @@ public class Cell extends StackPane {
         this.state = StateType.UNOPENED;
 
         // Set the rectangle outline to green and add to each cell
-        outline.setStroke(Color.LIGHTGREEN);
+        outline.setFill(Color.LIMEGREEN);
+        outline.setStroke(Color.GREEN);
         getChildren().addAll(outline);
         setTranslateY(row * PANE_SIZE + 1);
         setTranslateX(column * PANE_SIZE + 1);
+
+        setOnMouseClicked(cell -> open());
+    }
+
+    public void open() {
+        this.state = StateType.OPENED;
+        outline.setFill(Color.DARKGREEN);
+    }
+
+    public void flag() {
+        this.state = StateType.FLAGGED;
+        value.setText("Y");
     }
 
     public boolean isLime() {
