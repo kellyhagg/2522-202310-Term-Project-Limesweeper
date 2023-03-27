@@ -41,6 +41,9 @@ public class Cell extends StackPane {
     public void open() {
         this.state = StateType.OPENED;
         outline.setFill(Color.DARKGREEN);
+        if(isLime()) {
+            LimesweeperApplication.youLose();
+        }
     }
 
     public void flag() {
@@ -54,6 +57,14 @@ public class Cell extends StackPane {
 
     public void setLime(boolean lime) {
         isLime = lime;
+    }
+
+    public Text getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value.setText(value);
     }
 
     public StateType getState() {
