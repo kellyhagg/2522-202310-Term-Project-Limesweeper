@@ -48,7 +48,7 @@ public class Cell extends StackPane {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (btn == MouseButton.SECONDARY) {
+            } else if (btn == MouseButton.SECONDARY && state != StateType.LOCKED) {
                 boolean flagged = state == StateType.FLAGGED;
                 try {
                     flag(flagged);

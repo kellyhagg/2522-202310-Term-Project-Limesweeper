@@ -20,5 +20,10 @@ public enum StateType {
     /**
      * Flagged state
      */
-    FLAGGED
+    FLAGGED,
+
+    /**
+     * Locked state
+     */
+    LOCKED
 }

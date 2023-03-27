@@ -32,10 +32,11 @@ public class LimesweeperApplication extends Application {
                 if (cell.isLime() && cell.getState() != StateType.FLAGGED) {
                     Image image = new Image(Objects.requireNonNull(
                             LimesweeperApplication.class.getResource("lime.png")).openStream());
-                    ImageView flagView = new ImageView(image);
-                    flagView.setFitWidth(Cell.CELL_SIZE - 1);
-                    flagView.setFitHeight(Cell.CELL_SIZE - 1);
-                    cell.getChildren().add(flagView);
+                    ImageView limeView = new ImageView(image);
+                    limeView.setFitWidth(Cell.CELL_SIZE - 1);
+                    limeView.setFitHeight(Cell.CELL_SIZE - 1);
+                    cell.getChildren().add(limeView);
+                    cell.setState(StateType.LOCKED);
                 }
             }
         }
