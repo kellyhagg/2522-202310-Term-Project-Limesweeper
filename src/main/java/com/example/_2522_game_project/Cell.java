@@ -29,7 +29,7 @@ public class Cell extends StackPane {
         this.state = StateType.UNOPENED;
 
         // Set the rectangle outline to green and add to each cell
-        outline.setFill(Color.LIMEGREEN);
+        outline.setFill(Color.LIGHTGREEN);
         outline.setStroke(Color.GREEN);
         getChildren().addAll(outline);
         setTranslateY(row * PANE_SIZE + 1);
