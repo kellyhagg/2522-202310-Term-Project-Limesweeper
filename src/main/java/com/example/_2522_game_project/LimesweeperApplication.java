@@ -1,10 +1,14 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 
 /**
@@ -18,15 +22,20 @@ public class LimesweeperApplication extends Application {
     Timer timer;
     int counter;
 
-    public static void youLose() {
+    public static void youLose() throws IOException {
         revealAllLimes();
     }
 
-    private static void revealAllLimes() {
+    private static void revealAllLimes() throws IOException {
         for (Cell[] cells : board.getBoardGrid()) {
             for (Cell cell : cells) {
                 if (cell.isLime()) {
-                    cell.setValue("X");
+                    Image image = new Image(Objects.requireNonNull(
+                            LimesweeperApplication.class.getResource("lime.png")).openStream());
+                    ImageView flagView = new ImageView(image);
+                    flagView.setFitWidth(Cell.CELL_SIZE - 1);
+                    flagView.setFitHeight(Cell.CELL_SIZE - 1);
+                    cell.getChildren().add(flagView);
                 }
             }
         }
@@ -52,6 +61,7 @@ public class LimesweeperApplication extends Application {
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
+
     }
 
     public static void main(String[] args) {

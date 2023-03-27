@@ -1,11 +1,8 @@
 package com.example._2522_game_project;
 
-import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -47,7 +44,11 @@ public class Cell extends StackPane {
         setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
-                open();
+                try {
+                    open();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else if (btn == MouseButton.SECONDARY) {
                 try {
                     flag();
@@ -58,7 +59,7 @@ public class Cell extends StackPane {
         });
     }
 
-    public void open() {
+    public void open() throws IOException {
         this.state = StateType.OPENED;
         outline.setFill(Color.rgb(107,146,47));
         if(isLime()) {
@@ -74,7 +75,6 @@ public class Cell extends StackPane {
         flagView.setFitWidth(CELL_SIZE - 1);
         flagView.setFitHeight(CELL_SIZE - 1);
         getChildren().add(flagView);
-        value.setText("Y");
     }
 
     public boolean isLime() {
