@@ -1,9 +1,18 @@
 package com.example._2522_game_project;
 
+import javafx.event.EventHandler;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * The cell in a board.
@@ -28,14 +37,25 @@ public class Cell extends StackPane {
         this.isLime = false;
         this.state = StateType.UNOPENED;
 
-        // Set the rectangle outline to green and add to each cell
+        // Set the rectangle outline to green and add to the content pane
         outline.setFill(Color.LIGHTGREEN);
         outline.setStroke(Color.GREEN);
         getChildren().addAll(outline);
         setTranslateY(row * PANE_SIZE + 1);
         setTranslateX(column * PANE_SIZE + 1);
 
-        setOnMouseClicked(cell -> open());
+        setOnMouseClicked(t -> {
+            MouseButton btn = t.getButton();
+            if (btn == MouseButton.PRIMARY) {
+                open();
+            } else if (btn == MouseButton.SECONDARY) {
+                try {
+                    flag();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void open() {
@@ -46,8 +66,14 @@ public class Cell extends StackPane {
         }
     }
 
-    public void flag() {
+    public void flag() throws IOException {
         this.state = StateType.FLAGGED;
+        Image image = new Image(Objects.requireNonNull(
+                LimesweeperApplication.class.getResource("flag.png")).openStream());
+        ImageView flagView = new ImageView(image);
+        flagView.setFitWidth(CELL_SIZE - 1);
+        flagView.setFitHeight(CELL_SIZE - 1);
+        getChildren().add(flagView);
         value.setText("Y");
     }
 
