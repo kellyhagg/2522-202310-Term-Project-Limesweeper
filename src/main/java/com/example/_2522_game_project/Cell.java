@@ -48,7 +48,7 @@ public class Cell extends StackPane {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (btn == MouseButton.SECONDARY && state != StateType.LOCKED) {
+            } else if (btn == MouseButton.SECONDARY && state != StateType.LOCKED && state != StateType.OPENED) {
                 boolean flagged = state == StateType.FLAGGED;
                 try {
                     flag(flagged);
@@ -60,10 +60,12 @@ public class Cell extends StackPane {
     }
 
     public void open() throws IOException {
-        this.state = StateType.OPENED;
-        outline.setFill(Color.rgb(107,146,47));
-        if(isLime()) {
-            LimesweeperApplication.youLose();
+        if (state != StateType.LOCKED) {
+            this.state = StateType.OPENED;
+            outline.setFill(Color.rgb(107,146,47));
+            if(isLime()) {
+                LimesweeperApplication.youLose();
+            }
         }
     }
 

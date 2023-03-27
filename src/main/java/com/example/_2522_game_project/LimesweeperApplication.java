@@ -36,8 +36,8 @@ public class LimesweeperApplication extends Application {
                     limeView.setFitWidth(Cell.CELL_SIZE - 1);
                     limeView.setFitHeight(Cell.CELL_SIZE - 1);
                     cell.getChildren().add(limeView);
-                    cell.setState(StateType.LOCKED);
                 }
+                cell.setState(StateType.LOCKED);
             }
         }
     }
