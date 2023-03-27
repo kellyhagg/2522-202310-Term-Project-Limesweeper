@@ -38,8 +38,8 @@ public class Cell extends StackPane {
         this.state = StateType.UNOPENED;
 
         // Set the rectangle outline to green and add to the content pane
-        outline.setFill(Color.LIGHTGREEN);
-        outline.setStroke(Color.GREEN);
+        outline.setFill(Color.rgb(221,232,164));
+        outline.setStroke(Color.rgb(134,183,62));
         getChildren().addAll(outline);
         setTranslateY(row * PANE_SIZE + 1);
         setTranslateX(column * PANE_SIZE + 1);
@@ -60,7 +60,7 @@ public class Cell extends StackPane {
 
     public void open() {
         this.state = StateType.OPENED;
-        outline.setFill(Color.DARKGREEN);
+        outline.setFill(Color.rgb(107,146,47));
         if(isLime()) {
             LimesweeperApplication.youLose();
         }

@@ -35,7 +35,7 @@ public class LimesweeperApplication extends Application {
     private Pane createContentPane() {
         Pane pane = new Pane();
         pane.setPrefSize(810, 432); // hardcoded for now, Kelly to make dynamic with each difficulty
-        pane.setStyle("-fx-background-color: green;");
+        pane.setStyle("-fx-background-color: rgb(134,183,62);");
         board = new Board(30, 16, 99); // hardcoded here for now (likely to move)
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
