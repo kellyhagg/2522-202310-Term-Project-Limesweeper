@@ -64,7 +64,7 @@ public class Board {
                 else {
                     count = checkMiddle(row, col); // Check Middle
                 }
-//                boardGrid[row][col].setNeighbourLimes(count);
+                boardGrid[col][row].setNeighbourLimes(count);
             }
         }
     }

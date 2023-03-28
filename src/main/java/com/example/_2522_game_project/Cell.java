@@ -26,7 +26,7 @@ public class Cell extends StackPane {
     private final int column;
     private boolean isLime;
     private StateType state;
-    private int neighbourLimes = 5; // temporarily set to 5 for testing purposes
+    private int neighbourLimes; // temporarily set to 5 for testing purposes
 
 
     public Cell(int column, int row) {
