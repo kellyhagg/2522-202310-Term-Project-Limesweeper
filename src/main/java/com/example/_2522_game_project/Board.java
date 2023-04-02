@@ -17,10 +17,11 @@ public class Board {
     public static final int HARD_ROWS = 16;
     private final int rows;
     private final int columns;
-    private final Cell[][] boardGrid = new Cell[HARD_COLUMNS][HARD_ROWS];
+    private final Cell[][] boardGrid;
     private final int numLimes;
 
-    public Board(int columns, int rows, int numLimes) {
+    public Board(final int columns, final int rows, final int numLimes) {
+        this.boardGrid = new Cell[columns][rows];
         this.columns = columns;
         this.rows = rows;
         this.numLimes = numLimes;
@@ -32,7 +33,6 @@ public class Board {
         }
         populateLimes(columns, rows, numLimes);
         setNeighbourLimes();
-        System.out.println("testing");
     }
 
     private void populateLimes(int columns, int rows, int numLimes) {

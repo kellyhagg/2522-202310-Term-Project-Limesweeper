@@ -8,9 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * The cell in a board.
@@ -63,16 +61,18 @@ public class Cell extends StackPane {
 
     public void open() throws IOException {
         if (state != StateType.LOCKED) {
-            Text text = new Text(String.valueOf(neighbourLimes));
-            final int r = 159 + (16 * neighbourLimes);
-            final int g = 207 + (8 * neighbourLimes);
-            final int b = 87 + (28 * neighbourLimes);
+            if (neighbourLimes != 0) {
+                Text text = new Text(String.valueOf(neighbourLimes));
+                final int r = 159 + (16 * neighbourLimes);
+                final int g = 207 + (8 * neighbourLimes);
+                final int b = 87 + (28 * neighbourLimes);
+                text.setFont(Font.font("Impact", 19));
+                text.setFill(Color.rgb(r, g, b));
+                text.setVisible(true);
+                getChildren().add(text);
+            }
             this.state = StateType.OPENED;
             outline.setFill(Color.rgb(107,146,47));
-            text.setFont(Font.font("Impact", 19));
-            text.setFill(Color.rgb(r, g, b));
-            text.setVisible(true);
-            getChildren().add(text);
             if (isLime()) {
                 LimesweeperApplication.youLose();
             }

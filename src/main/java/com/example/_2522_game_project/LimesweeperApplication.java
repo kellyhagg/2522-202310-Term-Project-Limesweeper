@@ -41,12 +41,27 @@ public class LimesweeperApplication extends Application {
             }
         }
     }
-
-    private Pane createContentPane() {
+    private Pane createContentPane(final Difficulty difficulty) {
         Pane pane = new Pane();
-        pane.setPrefSize(810, 432); // hardcoded for now, Kelly to make dynamic with each difficulty
+        final int factor = 27;
+        final int barHeight = 48;
+        final int easyColumnsRows = 10, mediumColumnsRows = 16, hardColumnsRows = 24;
+        final int easyNumLimes = 10, mediumNumLimes = 40, hardNumLimes = 99;
+        switch (difficulty) {
+            case EASY -> {
+                board = new Board(easyColumnsRows, easyColumnsRows, easyNumLimes);
+                pane.setPrefSize(easyColumnsRows * factor, easyColumnsRows * factor + barHeight);
+            }
+            case HARD -> {
+                board = new Board(hardColumnsRows, hardColumnsRows, hardNumLimes);
+                pane.setPrefSize(hardColumnsRows * factor, hardColumnsRows * factor + barHeight);
+            }
+            default -> {
+                board = new Board(mediumColumnsRows, mediumColumnsRows, mediumNumLimes);
+                pane.setPrefSize(mediumColumnsRows * factor, mediumColumnsRows * factor + barHeight);
+            }
+        }
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
-        board = new Board(30, 16, 99); // hardcoded here for now (likely to move)
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
             for (int rows = 0; rows < board.getRows(); rows++) {
@@ -57,15 +72,14 @@ public class LimesweeperApplication extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(createContentPane());
+    public void start(final Stage stage) throws Exception {
+        Scene scene = new Scene(createContentPane(Difficulty.MEDIUM));
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
-
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch();
     }
 }
