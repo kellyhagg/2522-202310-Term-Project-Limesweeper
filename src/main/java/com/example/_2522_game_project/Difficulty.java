@@ -8,17 +8,17 @@ package com.example._2522_game_project;
  */
 public enum Difficulty {
     /**
-     * Easy difficulty
+     * Easy difficulty.
      */
     EASY,
 
     /**
-     * Medium difficulty
+     * Medium difficulty.
      */
     MEDIUM,
 
     /**
-     * Hard difficulty
+     * Hard difficulty.
      */
     HARD,
 }
