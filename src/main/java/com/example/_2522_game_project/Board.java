@@ -83,7 +83,6 @@ public class Board {
             }
         } else if (row == this.rows -1) {
             for (int i = 0; i < leftBottom.length - 1; i++) {
-                System.out.printf("row: %d, %d, %d\n",row, leftBottom[i+1], row + leftBottom[i]);
                 if (boardGrid[leftBottom[i+1]][row + leftBottom[i]].isLime()) {
                     count += 1;
                 }
@@ -91,14 +90,12 @@ public class Board {
             }
         } else {
             for (int i = 0; i < point.length - 1; i++) {
-                System.out.printf("row %d : %d, %d\n", row,  point[i+1], row + point[i]);
                 if (boardGrid[point[i+1]][row  + point[i]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
         }
-        System.out.printf("Row %d count: %d\n", row, count);
         return count;
     }
 
