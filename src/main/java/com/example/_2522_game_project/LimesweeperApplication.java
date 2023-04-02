@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Timer;
@@ -92,10 +91,12 @@ public class LimesweeperApplication extends Application {
             }
         },0, 1000);
     }
-    private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
-        this.pane = new Pane();
+    private Pane createContentPane(final Stage stage, final Difficulty difficulty) throws IOException {
+        pane = new Pane();
         final int barHeight = 60;
-        final int easyNumLimes = 10, mediumNumLimes = 40, hardNumLimes = 99;
+        final int easyNumLimes = 10;
+        final int mediumNumLimes = 40;
+        final int hardNumLimes = 99;
         switch (difficulty) {
             case EASY -> {
                 board = new Board(EASY_COLUMNS_ROWS, EASY_COLUMNS_ROWS, easyNumLimes);
@@ -161,7 +162,7 @@ public class LimesweeperApplication extends Application {
         return pane;
     }
 
-    public void startGame(Stage stage) throws Exception{
+    public void startGame(final Stage stage) throws Exception {
         Scene scene = new Scene(createContentPane(stage, Difficulty.MEDIUM));
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
