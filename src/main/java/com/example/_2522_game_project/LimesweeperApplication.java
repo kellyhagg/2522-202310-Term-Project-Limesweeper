@@ -68,6 +68,17 @@ public class LimesweeperApplication extends Application {
         return addContent(pane, difficulty);
     }
 
+    private void checkNumOfFlags() {
+        Cell[][] boardGrid = board.getBoardGrid();
+        for (int column = 0; column < board.getColumns(); column++) {
+            for (int row = 0; row < board.getRows(); row++) {
+                if (boardGrid[column][row].getState() == StateType.FLAGGED) {
+                    this.counter += 1;
+                }
+            }
+        }
+    }
+
     private Pane addContent(final Pane pane, final Difficulty difficulty) throws IOException {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
@@ -78,7 +89,7 @@ public class LimesweeperApplication extends Application {
         Pane resetBtn = new StackPane();
         resetBtn.setPrefSize(50, 50);
         Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("reset.png")).openStream());
+                LimesweeperApplication.class.getResource("lime.png")).openStream());
         ImageView resetView = new ImageView(image);
         resetView.setFitHeight(50);
         resetView.setFitWidth(50);
