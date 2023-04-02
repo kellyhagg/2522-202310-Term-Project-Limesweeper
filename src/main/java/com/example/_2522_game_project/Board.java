@@ -164,7 +164,6 @@ public class Board {
         return count;
     }
 
-
     public int getRows() {
         return rows;
     }
