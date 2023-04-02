@@ -3,6 +3,7 @@ package com.example._2522_game_project;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -46,7 +47,7 @@ public class LimesweeperApplication extends Application {
             }
         }
     }
-    private Pane createContentPane(final Difficulty difficulty) throws IOException {
+    private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
         Pane pane = new Pane();
         final int barHeight = 60;
         final int easyNumLimes = 10, mediumNumLimes = 40, hardNumLimes = 99;
@@ -65,7 +66,7 @@ public class LimesweeperApplication extends Application {
             }
         }
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
-        return addContent(pane, difficulty);
+        return addContent(stage, pane, difficulty);
     }
 
     private void checkNumOfFlags() {
@@ -79,7 +80,11 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    private Pane addContent(final Pane pane, final Difficulty difficulty) throws IOException {
+    private void reset(Stage stage) throws Exception {
+        startGame(stage);
+    }
+
+    private Pane addContent(Stage stage, final Pane pane, final Difficulty difficulty) throws IOException {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
             for (int rows = 0; rows < board.getRows(); rows++) {
@@ -89,23 +94,37 @@ public class LimesweeperApplication extends Application {
         Pane resetBtn = new StackPane();
         resetBtn.setPrefSize(50, 50);
         Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("lime.png")).openStream());
+                LimesweeperApplication.class.getResource("reset.png")).openStream());
         ImageView resetView = new ImageView(image);
         resetView.setFitHeight(50);
         resetView.setFitWidth(50);
         resetBtn.getChildren().add(resetView);
         resetBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  - 25);
         resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        resetBtn.setOnMouseClicked(t -> {
+            MouseButton btn = t.getButton();
+            if (btn == MouseButton.PRIMARY) {
+                try {
+                    reset(stage);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         pane.getChildren().add(resetBtn);
         return pane;
     }
 
-    @Override
-    public void start(final Stage stage) throws Exception {
-        Scene scene = new Scene(createContentPane(Difficulty.MEDIUM));
+    public void startGame(Stage stage) throws Exception{
+        Scene scene = new Scene(createContentPane(stage, Difficulty.MEDIUM));
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void start(final Stage primarystage) throws Exception {
+        startGame(primarystage);
     }
 
     public static void main(final String[] args) {
