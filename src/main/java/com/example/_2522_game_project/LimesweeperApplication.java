@@ -43,7 +43,7 @@ public class LimesweeperApplication extends Application {
         }
         resetBtn.getChildren().clear();
         Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("dead_lime.png")).openStream());
+                LimesweeperApplication.class.getResource("flag.png")).openStream());
         ImageView deadView = new ImageView(image);
         deadView.setFitHeight(50);
         deadView.setFitWidth(50);
@@ -112,6 +112,7 @@ public class LimesweeperApplication extends Application {
     }
 
     private void reset(Stage stage) throws Exception {
+        timer.cancel();
         startGame(stage);
     }
 
