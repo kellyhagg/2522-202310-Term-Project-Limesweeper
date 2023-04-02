@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Utility class to run the Limesweeper application.
@@ -46,6 +47,19 @@ public class LimesweeperApplication extends Application {
                 cell.setState(StateType.LOCKED);
             }
         }
+    }
+
+    private void startTimer() {
+        this.timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            int time = 0;
+            @Override
+            public void run() {
+                System.out.printf("%ds\n", time);
+                time ++;
+            }
+        },0, 1000);
+//         should add timer.cancel() when game ends.
     }
     private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
         Pane pane = new Pane();
@@ -120,6 +134,7 @@ public class LimesweeperApplication extends Application {
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
+        startTimer();
     }
 
     @Override
