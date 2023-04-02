@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class LimesweeperApplication extends Application {
         }
         resetBtn.getChildren().clear();
         Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("flag.png")).openStream());
+                LimesweeperApplication.class.getResource("dead_lime.png")).openStream());
         ImageView deadView = new ImageView(image);
         deadView.setFitHeight(50);
         deadView.setFitWidth(50);
@@ -76,7 +77,6 @@ public class LimesweeperApplication extends Application {
                 time ++;
             }
         },0, 1000);
-//         should add timer.cancel() when game ends.
     }
     private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
         this.pane = new Pane();
@@ -153,6 +153,11 @@ public class LimesweeperApplication extends Application {
         stage.setScene(scene);
         stage.show();
         startTimer();
+        stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
+    }
+
+    private void stopTimer(WindowEvent event) {
+        timer.cancel();
     }
 
     @Override
