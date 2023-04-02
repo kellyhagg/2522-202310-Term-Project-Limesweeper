@@ -69,28 +69,28 @@ public class Board {
         }
     }
 
-    private int checkLeftLine(int col) {
+    private int checkLeftLine(int row) {
         int count = 0;
         int [] point = new int[] {-1, 0, -1, 1, 0, 1, 1, 1, 1, 0};
         int[] leftTop = new int[] {0, 1, 1, 1, 1, 0};
         int [] leftBottom = new int[] {-1, 0, -1, 1, 0, 1};
-        if (col == 0) {
+        if (row == 0) {
             for (int i = 0; i < leftTop.length - 1; i++) {
-                if (boardGrid[col + leftTop[i]][leftTop[i+1]].isLime()) {
+                if (boardGrid[leftTop[i+1]][row + leftTop[i]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
-        } else if (col == this.rows -1) {
+        } else if (row == this.rows -1) {
             for (int i = 0; i < leftBottom.length - 1; i++) {
-                if (boardGrid[col + leftBottom[i]][leftBottom[i+1]].isLime()) {
+                if (boardGrid[leftBottom[i+1]][row + leftBottom[i]].isLime()) {
                     count += 1;
                 }
                 i += 1;
             }
         } else {
             for (int i = 0; i < point.length - 1; i++) {
-                if (boardGrid[col  + point[i]][point[i+1]].isLime()) {
+                if (boardGrid[point[i+1]][row  + point[i]].isLime()) {
                     count += 1;
                 }
                 i += 1;
