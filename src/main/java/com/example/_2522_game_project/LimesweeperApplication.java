@@ -1,9 +1,11 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -73,14 +75,16 @@ public class LimesweeperApplication extends Application {
     private void startTimer() {
         timer = new Timer();
         Text time = new Text();
-        StackPane time_field = new StackPane();
-        time_field.setPrefSize(50, 50);
-        time_field.getChildren().add(time);
-        time_field.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 1.5  + 15);
-        time_field.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        StackPane timeField = new StackPane();
+        timeField.setPrefSize(65, 40);
+        timeField.setBackground(Background.fill(Color.rgb(87,126,27)));
+        timeField.getChildren().add(time);
+        timeField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE  - 80);
+        timeField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
         time.setText(String.valueOf(0) + ' ' + 's');
-        time.setFont(Font.font("Arial", 15));
-        pane.getChildren().add(time_field);
+        time.setFont(Font.font("Impact", 22));
+        time.setFill(Color.rgb(241,252,184));
+        pane.getChildren().add(timeField);
         timer.scheduleAtFixedRate(new TimerTask() {
             int timeCounter = 0;
             @Override
