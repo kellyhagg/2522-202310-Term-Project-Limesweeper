@@ -8,6 +8,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -26,7 +28,8 @@ public class LimesweeperApplication extends Application {
     static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
-    Timer timer;
+    private static Timer timer;
+    private int timerCounter;
     int counter;
     public static final int EASY_COLUMNS_ROWS = 10;
     public static final int MEDIUM_COLUMNS_ROWS = 16;
@@ -34,6 +37,7 @@ public class LimesweeperApplication extends Application {
     public static final int PANE_SIZE = 27;
 
     public static void youLose() throws IOException {
+        timer.cancel();
         revealAllLimes();
         pane.setStyle("-fx-background-color: rgb(255,97,55);");
         Cell[][] boardGrid = board.getBoardGrid();
@@ -68,13 +72,23 @@ public class LimesweeperApplication extends Application {
     }
 
     private void startTimer() {
-        this.timer = new Timer();
+        timer = new Timer();
+        Text time = new Text();
+        StackPane time_field = new StackPane();
+        time_field.setPrefSize(50, 50);
+        time_field.getChildren().add(time);
+        time_field.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 1.5  + 15);
+        time_field.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        time.setText(String.valueOf(0) + ' ' + 's');
+        time.setFont(Font.font("Arial", 15));
+        pane.getChildren().add(time_field);
         timer.scheduleAtFixedRate(new TimerTask() {
-            int time = 0;
+            int timeCounter = 0;
             @Override
             public void run() {
-                System.out.printf("%ds\n", time);
-                time ++;
+                System.out.printf("%ds\n", timeCounter);
+                time.setText(String.valueOf(timeCounter) + ' ' + 's');
+                timeCounter ++;
             }
         },0, 1000);
     }
