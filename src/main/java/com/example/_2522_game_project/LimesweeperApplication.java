@@ -127,12 +127,14 @@ public class LimesweeperApplication extends Application {
         numLimes = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
-        flagField.setPrefSize(50, 50);
+        flagField.setPrefSize(80, 40);
+        flagField.setBackground(Background.fill(Color.rgb(87,126,27)));
         flagField.getChildren().add(flags);
-        flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 15);
-        flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 65);
+        flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
         flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
-        flags.setFont(Font.font("Arial", 15));
+        flags.setFont(Font.font("Impact", 18));
+        flags.setFill(Color.rgb(241,252,184));
         pane.getChildren().add(flagField);
     }
 
