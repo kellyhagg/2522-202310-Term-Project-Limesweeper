@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -25,18 +26,19 @@ import java.util.TimerTask;
  * @version 230321
  */
 public class LimesweeperApplication extends Application {
+    public static final int EASY_COLUMNS_ROWS = 10;
+    public static final int MEDIUM_COLUMNS_ROWS = 16;
+    public static final int HARD_COLUMNS_ROWS = 24;
+    public static final int PANE_SIZE = 27;
     static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
+    private static StackPane settingsBtn;
     private static Timer timer;
     private static Text flags;
     private int timerCounter;
     int counter;
     static int numLimes;
-    public static final int EASY_COLUMNS_ROWS = 10;
-    public static final int MEDIUM_COLUMNS_ROWS = 16;
-    public static final int HARD_COLUMNS_ROWS = 24;
-    public static final int PANE_SIZE = 27;
 
     public static void youLose() throws IOException {
         timer.cancel();
@@ -76,14 +78,16 @@ public class LimesweeperApplication extends Application {
     private void startTimer() {
         timer = new Timer();
         Text time = new Text();
-        StackPane time_field = new StackPane();
-        time_field.setPrefSize(50, 50);
-        time_field.getChildren().add(time);
-        time_field.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 1.5  + 15);
-        time_field.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        StackPane timeField = new StackPane();
+        timeField.setPrefSize(65, 40);
+        timeField.setBackground(Background.fill(Color.rgb(87,126,27)));
+        timeField.getChildren().add(time);
+        timeField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE  - 80);
+        timeField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
         time.setText(String.valueOf(0) + ' ' + 's');
-        time.setFont(Font.font("Arial", 15));
-        pane.getChildren().add(time_field);
+        time.setFont(Font.font("Impact", 22));
+        time.setFill(Color.rgb(241,252,184));
+        pane.getChildren().add(timeField);
         timer.scheduleAtFixedRate(new TimerTask() {
             int timeCounter = 0;
             @Override
@@ -93,20 +97,21 @@ public class LimesweeperApplication extends Application {
                 timeCounter ++;
             }
         },0, 1000);
-        checkNumOfFlags();
     }
-    private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
-        this.pane = new Pane();
+    private void createContentPane(final Stage stage, final Difficulty difficulty) throws IOException {
+        pane = new Pane();
         final int barHeight = 60;
-        final int easyNumLimes = 10, mediumNumLimes = 40, hardNumLimes = 99;
+        final int easyNumLimes = 10;
+        final int mediumNumLimes = 40;
+        final int hardNumLimes = 99;
         switch (difficulty) {
             case EASY -> {
                 board = new Board(EASY_COLUMNS_ROWS, EASY_COLUMNS_ROWS, easyNumLimes);
                 pane.setPrefSize(EASY_COLUMNS_ROWS * PANE_SIZE, EASY_COLUMNS_ROWS * PANE_SIZE + barHeight);
             }
             case HARD -> {
-                board = new Board(EASY_COLUMNS_ROWS, EASY_COLUMNS_ROWS, hardNumLimes);
-                pane.setPrefSize(EASY_COLUMNS_ROWS * PANE_SIZE, EASY_COLUMNS_ROWS * PANE_SIZE + barHeight);
+                board = new Board(HARD_COLUMNS_ROWS, HARD_COLUMNS_ROWS, hardNumLimes);
+                pane.setPrefSize(HARD_COLUMNS_ROWS * PANE_SIZE, HARD_COLUMNS_ROWS * PANE_SIZE + barHeight);
             }
             default -> {
                 board = new Board(MEDIUM_COLUMNS_ROWS, MEDIUM_COLUMNS_ROWS, mediumNumLimes);
@@ -114,7 +119,7 @@ public class LimesweeperApplication extends Application {
             }
         }
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
-        return addContent(stage, pane, difficulty);
+        addContent(stage, difficulty);
     }
 
     private void checkNumOfFlags() {
@@ -145,23 +150,45 @@ public class LimesweeperApplication extends Application {
         startGame(stage);
     }
 
-    private Pane addContent(Stage stage, final Pane pane, final Difficulty difficulty) throws IOException {
+    private void generateResetBtn() throws IOException {
+        final int outerDimension = 50;
+        final int ySpacing = 4;
+        resetBtn = new StackPane();
+        resetBtn.setPrefSize(outerDimension, outerDimension);
+        Image image = new Image(Objects.requireNonNull(
+                LimesweeperApplication.class.getResource("reset.png")).openStream());
+        ImageView resetView = new ImageView(image);
+        resetView.setFitHeight(outerDimension);
+        resetView.setFitWidth(outerDimension);
+        resetBtn.getChildren().add(resetView);
+        resetBtn.setTranslateX((MEDIUM_COLUMNS_ROWS * PANE_SIZE - outerDimension) / 2.0);
+        resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+    }
+
+    public void generateSettingsBtn(final int xSpacing) throws IOException {
+        final int outerDimension = 36;
+        final int ySpacing = 11;
+        settingsBtn = new StackPane();
+        settingsBtn.setPrefSize(outerDimension, outerDimension);
+        Image image = new Image(Objects.requireNonNull(
+                LimesweeperApplication.class.getResource("settings.png")).openStream());
+        ImageView settingsView = new ImageView(image);
+        settingsView.setFitHeight(outerDimension);
+        settingsView.setFitWidth(outerDimension);
+        settingsBtn.getChildren().add(settingsView);
+        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  + xSpacing);
+        settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+    }
+
+    private void addContent(final Stage stage, final Difficulty difficulty) throws IOException {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
             for (int rows = 0; rows < board.getRows(); rows++) {
                 pane.getChildren().add(boardGrid[columns][rows]);
             }
         }
-        resetBtn = new StackPane();
-        resetBtn.setPrefSize(50, 50);
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("reset.png")).openStream());
-        ImageView resetView = new ImageView(image);
-        resetView.setFitHeight(50);
-        resetView.setFitWidth(50);
-        resetBtn.getChildren().add(resetView);
-        resetBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  - 25);
-        resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        generateResetBtn();
+        generateSettingsBtn(63);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
@@ -173,15 +200,15 @@ public class LimesweeperApplication extends Application {
             }
         });
         pane.getChildren().add(resetBtn);
-        return pane;
+        pane.getChildren().add(settingsBtn);
     }
 
-    public void startGame(Stage stage) throws Exception{
-        Scene scene = new Scene(createContentPane(stage, Difficulty.MEDIUM));
+    public void startGame(final Stage stage) throws Exception {
+        createContentPane(stage, Difficulty.MEDIUM);
+        Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
-
         startTimer();
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
     }
