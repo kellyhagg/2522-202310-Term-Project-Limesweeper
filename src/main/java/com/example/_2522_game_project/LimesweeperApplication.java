@@ -32,6 +32,7 @@ public class LimesweeperApplication extends Application {
     static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
+    private static StackPane settingsBtn;
     private static Timer timer;
     private int timerCounter;
     int counter;
@@ -135,16 +136,33 @@ public class LimesweeperApplication extends Application {
     }
 
     private void generateResetBtn() throws IOException {
+        final int outerDimension = 50;
+        final int ySpacing = 4;
         resetBtn = new StackPane();
-        resetBtn.setPrefSize(50, 50);
+        resetBtn.setPrefSize(outerDimension, outerDimension);
         Image image = new Image(Objects.requireNonNull(
                 LimesweeperApplication.class.getResource("reset.png")).openStream());
         ImageView resetView = new ImageView(image);
-        resetView.setFitHeight(50);
-        resetView.setFitWidth(50);
+        resetView.setFitHeight(outerDimension);
+        resetView.setFitWidth(outerDimension);
         resetBtn.getChildren().add(resetView);
-        resetBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  - 25);
-        resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        resetBtn.setTranslateX((MEDIUM_COLUMNS_ROWS * PANE_SIZE - outerDimension) / 2.0);
+        resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+    }
+
+    public void generateSettingsBtn(final int xSpacing) throws IOException {
+        final int outerDimension = 36;
+        final int ySpacing = 11;
+        settingsBtn = new StackPane();
+        settingsBtn.setPrefSize(outerDimension, outerDimension);
+        Image image = new Image(Objects.requireNonNull(
+                LimesweeperApplication.class.getResource("settings.png")).openStream());
+        ImageView settingsView = new ImageView(image);
+        settingsView.setFitHeight(outerDimension);
+        settingsView.setFitWidth(outerDimension);
+        settingsBtn.getChildren().add(settingsView);
+        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  + xSpacing);
+        settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
     private void addContent(final Stage stage, final Difficulty difficulty) throws IOException {
@@ -155,6 +173,7 @@ public class LimesweeperApplication extends Application {
             }
         }
         generateResetBtn();
+        generateSettingsBtn(63);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
@@ -166,6 +185,7 @@ public class LimesweeperApplication extends Application {
             }
         });
         pane.getChildren().add(resetBtn);
+        pane.getChildren().add(settingsBtn);
     }
 
     public void startGame(final Stage stage) throws Exception {
