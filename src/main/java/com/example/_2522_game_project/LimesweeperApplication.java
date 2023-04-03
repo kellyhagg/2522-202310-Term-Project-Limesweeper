@@ -97,6 +97,7 @@ public class LimesweeperApplication extends Application {
                 timeCounter ++;
             }
         },0, 1000);
+        checkNumOfFlags();
     }
     private void createContentPane(final Stage stage, final Difficulty difficulty) throws IOException {
         pane = new Pane();
