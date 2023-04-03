@@ -29,8 +29,10 @@ public class LimesweeperApplication extends Application {
     private static Pane pane;
     private static StackPane resetBtn;
     private static Timer timer;
+    private static Text flags;
     private int timerCounter;
     int counter;
+    static int numLimes;
     public static final int EASY_COLUMNS_ROWS = 10;
     public static final int MEDIUM_COLUMNS_ROWS = 16;
     public static final int HARD_COLUMNS_ROWS = 24;
@@ -91,6 +93,7 @@ public class LimesweeperApplication extends Application {
                 timeCounter ++;
             }
         },0, 1000);
+        checkNumOfFlags();
     }
     private Pane createContentPane(Stage stage, final Difficulty difficulty) throws IOException {
         this.pane = new Pane();
@@ -115,14 +118,26 @@ public class LimesweeperApplication extends Application {
     }
 
     private void checkNumOfFlags() {
-        Cell[][] boardGrid = board.getBoardGrid();
-        for (int column = 0; column < board.getColumns(); column++) {
-            for (int row = 0; row < board.getRows(); row++) {
-                if (boardGrid[column][row].getState() == StateType.FLAGGED) {
-                    this.counter += 1;
-                }
-            }
-        }
+        numLimes = board.getNumLimes();
+        flags = new Text();
+        StackPane flagField = new StackPane();
+        flagField.setPrefSize(50, 50);
+        flagField.getChildren().add(flags);
+        flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 15);
+        flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+        flags.setFont(Font.font("Arial", 15));
+        pane.getChildren().add(flagField);
+    }
+
+    public static void decreaseFlags() {
+        numLimes -=1 ;
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+    }
+
+    public static void increaseFlags() {
+        numLimes += 1;
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
     }
 
     private void reset(Stage stage) throws Exception {
@@ -166,6 +181,7 @@ public class LimesweeperApplication extends Application {
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
         stage.show();
+
         startTimer();
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
     }

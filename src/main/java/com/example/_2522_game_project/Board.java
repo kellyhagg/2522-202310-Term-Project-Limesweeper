@@ -175,4 +175,8 @@ public class Board {
     public Cell[][] getBoardGrid() {
         return boardGrid;
     }
+
+    public int getNumLimes() {
+        return numLimes;
+    }
 }

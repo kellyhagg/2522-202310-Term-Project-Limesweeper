@@ -92,7 +92,9 @@ public class Cell extends StackPane {
         flagView.setFitHeight(CELL_SIZE - 1);
         if (!flagged) {
             getChildren().add(flagView);
+            LimesweeperApplication.decreaseFlags();
         } else {
+            LimesweeperApplication.increaseFlags();
             this.state = StateType.UNOPENED;
             getChildren().clear();
             outline.setFill(Color.rgb(221,232,164));
