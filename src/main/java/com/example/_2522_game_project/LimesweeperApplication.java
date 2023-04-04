@@ -1,6 +1,7 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -34,6 +36,7 @@ public class LimesweeperApplication extends Application {
     private static StackPane resetBtn;
     private static StackPane settingsBtn;
     private static StackPane flagChangeBtn;
+    private static StackPane leaderBoardBtn;
     private static Timer timer;
     private static String flagID = "white";
 
@@ -57,17 +60,17 @@ public class LimesweeperApplication extends Application {
         TextInputDialog userInput = new TextInputDialog();
         userInput.setTitle("LeaderBoard");
         userInput.setContentText("Enter your name to save the score: ");
-        userInput.setHeaderText(null);
+        timeCounter[0] = timeCounter[0] - 1;
+        userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s");
         userInput.setGraphic(null);
         Optional<String> result = userInput.showAndWait();
         if (result.isPresent()) {
             String user = userInput.getEditor().getText();
             writeToFile(user);
         }
-        readFile();
     }
 
-    private static void readFile() {
+    private static List<Person> readFile() {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
         try (Scanner scanner = new Scanner(new File(fileName));) {
             List<Person> people = new ArrayList<>();
@@ -76,14 +79,45 @@ public class LimesweeperApplication extends Application {
                 String score = scanner.nextLine();
                 people.add(new Person(name, Integer.parseInt(String.valueOf(score))));
             }
-            showLeaderBoard(people);
+            return people;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private static void showLeaderBoard(List<Person> people) {
-        people.sort(Comparator.comparing(Person::score));
+    private static void showLeaderBoard(Stage stage) {
+        Label label = new Label("This is test");
+        Popup popup = new Popup();
+
+        label.setStyle(" -fx-background-color: white;");
+        popup.getContent().add(label);
+        label.setMinWidth(80);
+        label.setMinHeight(50);
+
+        leaderBoardBtn.setOnMouseClicked(t -> {
+            MouseButton btn = t.getButton();
+            if (btn == MouseButton.PRIMARY) {
+                if (!popup.isShowing()) {
+                    popup.show(stage);
+                } else {
+                    popup.hide();
+                }
+            }
+        });
+    }
+
+    private void generateLeaderBoardBtn() throws IOException {
+
+        leaderBoardBtn = new StackPane();
+        leaderBoardBtn.setPrefSize(50, 50);
+        Image image = new Image(Objects.requireNonNull(LimesweeperApplication.class.getResource("prize.png")).openStream());
+        ImageView rankView = new ImageView(image);
+        rankView.setFitHeight(42);
+        rankView.setFitWidth(42);
+        leaderBoardBtn.getChildren().add(rankView);
+        leaderBoardBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2 + 30);
+        leaderBoardBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 4);
     }
 
     private static void writeToFile(String userName) {
@@ -293,7 +327,7 @@ public class LimesweeperApplication extends Application {
         settingsView.setFitHeight(outerDimension);
         settingsView.setFitWidth(outerDimension);
         settingsBtn.getChildren().add(settingsView);
-        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0  + xSpacing);
+        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 1.8 + xSpacing);
         settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
@@ -325,6 +359,7 @@ public class LimesweeperApplication extends Application {
                 pane.getChildren().add(boardGrid[columns][rows]);
             }
         }
+        generateLeaderBoardBtn();
         generateResetBtn();
         generateSettingsBtn(63);
         generateFlagChangeBtn(63, false);
@@ -338,9 +373,11 @@ public class LimesweeperApplication extends Application {
                 }
             }
         });
+        showLeaderBoard(stage);
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
         pane.getChildren().add(flagChangeBtn);
+        pane.getChildren().add(leaderBoardBtn);
         flagChangeBtn.setOnMouseClicked(t -> {
             try {
                 changeFlag();
