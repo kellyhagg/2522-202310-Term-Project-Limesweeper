@@ -203,7 +203,7 @@ public class Board {
                     x = neighbour[0];
                     y = neighbour[1];
                     if (copiedGrid[x][y].getState() == StateType.UNOPENED) {
-                        copiedGrid[x][y].testing();
+                        copiedGrid[x][y].openNeighbour();
                         openNeighborCells(copiedGrid[x][y]);
                     }
                 }

@@ -1,6 +1,11 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -8,15 +13,19 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Utility class to run the Limesweeper application.
@@ -37,9 +46,42 @@ public class LimesweeperApplication extends Application {
     private static Timer timer;
     private static String flagID = "white";
     private static Text flags;
-    private int timerCounter;
-    int counter;
+    private static int[] timeCounter = {0};
+    static int counter;
     static int numLimes;
+
+    public static void checkWin(){
+//        youWin();
+        if (counter == (board.getColumns() * board.getRows())) {
+            System.out.println("All cells are opened.");
+            youWin();
+        }
+    }
+
+    public static void youWin() {
+        timer.cancel();
+        TextInputDialog userInput = new TextInputDialog();
+        userInput.setTitle("LeaderBoard");
+        userInput.setContentText("Enter your name: ");
+        userInput.setHeaderText(null);
+        userInput.setGraphic(null);
+        Optional<String> result = userInput.showAndWait();
+        if (result.isPresent()) {
+            String user = userInput.getEditor().getText();
+            writeToFile(user);
+        }
+    }
+
+    private static void writeToFile(String userName) {
+        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
+
+        try(FileWriter fileWriter = new FileWriter(fileName, true);
+            PrintWriter printWriter = new PrintWriter(fileWriter);) {
+            printWriter.println(userName + " " + timeCounter[0]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void youLose() throws IOException {
         final int resetBtnDimension = 50;
@@ -101,13 +143,14 @@ public class LimesweeperApplication extends Application {
         time.setFont(Font.font("Impact", 22));
         time.setFill(Color.rgb(241,252,184));
         pane.getChildren().add(timeField);
+
         timer.scheduleAtFixedRate(new TimerTask() {
-            int timeCounter = 0;
+
             @Override
             public void run() {
 //                System.out.printf("%ds\n", timeCounter);
-                time.setText(String.valueOf(timeCounter) + ' ' + 's');
-                timeCounter ++;
+                time.setText(String.valueOf(timeCounter[0]) + ' ' + 's');
+                timeCounter[0]++;
             }
         },0, 1000);
         checkNumOfFlags();
@@ -163,6 +206,8 @@ public class LimesweeperApplication extends Application {
 
     private void reset(Stage stage) throws Exception {
         timer.cancel();
+        timeCounter = new int[]{0};
+        counter = 0;
         startGame(stage);
     }
 
