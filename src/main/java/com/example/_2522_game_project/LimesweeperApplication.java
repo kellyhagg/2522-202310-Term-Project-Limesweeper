@@ -83,13 +83,7 @@ public class LimesweeperApplication extends Application {
     }
 
     private static void showLeaderBoard(List<Person> people) {
-        for (Person person: people) {
-            System.out.println(person.getName());
-        }
-        people.sort(Comparator.comparing(Person::getScore));
-        for (Person person: people) {
-            System.out.println(person.getName());
-        }
+        people.sort(Comparator.comparing(Person::score));
     }
 
     private static void writeToFile(String userName) {
