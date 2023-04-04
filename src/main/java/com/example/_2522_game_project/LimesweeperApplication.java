@@ -70,28 +70,25 @@ public class LimesweeperApplication extends Application {
     private static void readFile() {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
         try (Scanner scanner = new Scanner(new File(fileName));) {
-            int lineNum = 0;
-            List<String> names = new ArrayList<String>();
-            List<Integer> scores = new ArrayList<Integer>();
+            List<Person> people = new ArrayList<>();
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (lineNum % 2 == 0) {
-                    names.add(line);
-                } else {
-                    scores.add(Integer.parseInt(String.valueOf(line)));
-                }
-                System.out.println(line);
-                lineNum += 1;
+                String name = scanner.nextLine();
+                String score = scanner.nextLine();
+                people.add(new Person(name, Integer.parseInt(String.valueOf(score))));
             }
-            showLeaderBoard(names, scores);
+            showLeaderBoard(people);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private static void showLeaderBoard(List<String> names, List<Integer> scores) {
-        for (int i = 0; i < names.size(); i ++) {
-            System.out.printf("%s: %d", names.get(i), scores.get(i));
+    private static void showLeaderBoard(List<Person> people) {
+        for (Person person: people) {
+            System.out.println(person.getName());
+        }
+        people.sort(Comparator.comparing(Person::getScore));
+        for (Person person: people) {
+            System.out.println(person.getName());
         }
     }
 
