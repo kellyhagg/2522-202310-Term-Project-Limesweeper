@@ -36,8 +36,10 @@ public class LimesweeperApplication extends Application {
     private static StackPane flagChangeBtn;
     private static Timer timer;
     private String flagID = "white";
+    private static Text flags;
     private int timerCounter;
     int counter;
+    static int numLimes;
 
     public static void youLose() throws IOException {
         timer.cancel();
@@ -91,11 +93,12 @@ public class LimesweeperApplication extends Application {
             int timeCounter = 0;
             @Override
             public void run() {
-                System.out.printf("%ds\n", timeCounter);
+//                System.out.printf("%ds\n", timeCounter);
                 time.setText(String.valueOf(timeCounter) + ' ' + 's');
                 timeCounter ++;
             }
         },0, 1000);
+        checkNumOfFlags();
     }
     private void createContentPane(final Stage stage, final Difficulty difficulty) throws IOException {
         pane = new Pane();
@@ -122,14 +125,28 @@ public class LimesweeperApplication extends Application {
     }
 
     private void checkNumOfFlags() {
-        Cell[][] boardGrid = board.getBoardGrid();
-        for (int column = 0; column < board.getColumns(); column++) {
-            for (int row = 0; row < board.getRows(); row++) {
-                if (boardGrid[column][row].getState() == StateType.FLAGGED) {
-                    this.counter += 1;
-                }
-            }
-        }
+        numLimes = board.getNumLimes();
+        flags = new Text();
+        StackPane flagField = new StackPane();
+        flagField.setPrefSize(80, 40);
+        flagField.setBackground(Background.fill(Color.rgb(87,126,27)));
+        flagField.getChildren().add(flags);
+        flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 65);
+        flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+        flags.setFont(Font.font("Impact", 18));
+        flags.setFill(Color.rgb(241,252,184));
+        pane.getChildren().add(flagField);
+    }
+
+    public static void decreaseFlags() {
+        numLimes -=1 ;
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+    }
+
+    public static void increaseFlags() {
+        numLimes += 1;
+        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
     }
 
     private void reset(Stage stage) throws Exception {

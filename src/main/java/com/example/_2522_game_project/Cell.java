@@ -64,23 +64,38 @@ public class Cell extends StackPane {
         this.outline.setStroke(color);
     }
 
+    public void setText() {
+        if (neighbourLimes != 0) {
+            Text text = new Text(String.valueOf(neighbourLimes));
+            final int r = 159 + (16 * neighbourLimes);
+            final int g = 207 + (8 * neighbourLimes);
+            final int b = 87 + (28 * neighbourLimes);
+            text.setFont(Font.font("Impact", 19));
+            text.setFill(Color.rgb(r, g, b));
+            text.setVisible(true);
+            getChildren().add(text);
+        }
+    }
+    public void testing() throws IOException {
+        if (neighbourLimes != 0) {
+            setText();
+        }
+        this.state = StateType.OPENED;
+        outline.setFill(Color.rgb(107,146,47));
+        if (isLime()) {
+            LimesweeperApplication.youLose();
+        }
+    }
+
     public void open() throws IOException {
         if (state != StateType.LOCKED) {
-            if (neighbourLimes != 0) {
-                Text text = new Text(String.valueOf(neighbourLimes));
-                final int r = 159 + (16 * neighbourLimes);
-                final int g = 207 + (8 * neighbourLimes);
-                final int b = 87 + (28 * neighbourLimes);
-                text.setFont(Font.font("Impact", 19));
-                text.setFill(Color.rgb(r, g, b));
-                text.setVisible(true);
-                getChildren().add(text);
-            }
+            setText();
             this.state = StateType.OPENED;
             outline.setFill(Color.rgb(107,146,47));
             if (isLime()) {
                 LimesweeperApplication.youLose();
             }
+            Board.openNeighborCells(this);
         }
     }
 
@@ -92,7 +107,9 @@ public class Cell extends StackPane {
         flagView.setFitHeight(CELL_SIZE - 1);
         if (!flagged) {
             getChildren().add(flagView);
+            LimesweeperApplication.decreaseFlags();
         } else {
+            LimesweeperApplication.increaseFlags();
             this.state = StateType.UNOPENED;
             getChildren().clear();
             outline.setFill(Color.rgb(221,232,164));
@@ -119,4 +136,15 @@ public class Cell extends StackPane {
     }
 
     public void setNeighbourLimes(int neighbourLimes) { this.neighbourLimes = neighbourLimes; }
+    public int getNeighbourLimes() {
+        return this.neighbourLimes;
+    }
+
+    public int getRow() {
+        return this.row;
+    }
+
+    public int getColumn() {
+        return this.column;
+    }
 }
