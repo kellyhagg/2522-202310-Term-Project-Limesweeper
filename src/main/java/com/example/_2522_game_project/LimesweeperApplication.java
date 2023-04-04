@@ -14,9 +14,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+
+import java.io.*;
 import java.util.*;
 
 /**
@@ -46,7 +45,7 @@ public class LimesweeperApplication extends Application {
     static int numLimes;
 
     public static void checkWin(){
-//        youWin();
+        youWin();
         if (counter == (board.getColumns() * board.getRows())) {
             System.out.println("All cells are opened.");
             youWin();
@@ -57,13 +56,42 @@ public class LimesweeperApplication extends Application {
         timer.cancel();
         TextInputDialog userInput = new TextInputDialog();
         userInput.setTitle("LeaderBoard");
-        userInput.setContentText("Enter your name: ");
+        userInput.setContentText("Enter your name to save the score: ");
         userInput.setHeaderText(null);
         userInput.setGraphic(null);
         Optional<String> result = userInput.showAndWait();
         if (result.isPresent()) {
             String user = userInput.getEditor().getText();
             writeToFile(user);
+        }
+        readFile();
+    }
+
+    private static void readFile() {
+        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
+        try (Scanner scanner = new Scanner(new File(fileName));) {
+            int lineNum = 0;
+            List<String> names = new ArrayList<String>();
+            List<Integer> scores = new ArrayList<Integer>();
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (lineNum % 2 == 0) {
+                    names.add(line);
+                } else {
+                    scores.add(Integer.parseInt(String.valueOf(line)));
+                }
+                System.out.println(line);
+                lineNum += 1;
+            }
+            showLeaderBoard(names, scores);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void showLeaderBoard(List<String> names, List<Integer> scores) {
+        for (int i = 0; i < names.size(); i ++) {
+            System.out.printf("%s: %d", names.get(i), scores.get(i));
         }
     }
 
@@ -72,7 +100,8 @@ public class LimesweeperApplication extends Application {
 
         try(FileWriter fileWriter = new FileWriter(fileName, true);
             PrintWriter printWriter = new PrintWriter(fileWriter);) {
-            printWriter.println(userName + " " + timeCounter[0]);
+            printWriter.println(userName);
+            printWriter.println(timeCounter[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
