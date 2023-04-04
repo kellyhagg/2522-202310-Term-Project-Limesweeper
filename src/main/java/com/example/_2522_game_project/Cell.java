@@ -101,7 +101,7 @@ public class Cell extends StackPane {
 
     public void flag(final boolean flagged) throws IOException {
         this.state = StateType.FLAGGED;
-        Image image = new Image(LimesweeperApplication.class.getResource("flag.png").openStream());
+        Image image = new Image(LimesweeperApplication.class.getResource("white_flag.png").openStream());
         ImageView flagView = new ImageView(image);
         flagView.setFitWidth(CELL_SIZE - 1);
         flagView.setFitHeight(CELL_SIZE - 1);
