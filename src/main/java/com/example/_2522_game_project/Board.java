@@ -202,10 +202,6 @@ public class Board {
                 if (neighbour != null) {
                     x = neighbour[0];
                     y = neighbour[1];
-                    for(int n: neighbour) {
-                        System.out.print(n+" ");
-                    }
-                    System.out.println();
                     if (copiedGrid[x][y].getState() == StateType.UNOPENED) {
                         copiedGrid[x][y].testing();
                         openNeighborCells(copiedGrid[x][y]);
