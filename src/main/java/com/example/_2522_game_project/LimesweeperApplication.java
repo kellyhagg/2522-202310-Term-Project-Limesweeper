@@ -35,13 +35,16 @@ public class LimesweeperApplication extends Application {
     private static StackPane settingsBtn;
     private static StackPane flagChangeBtn;
     private static Timer timer;
-    private String flagID = "white";
+    private static String flagID = "white";
     private static Text flags;
     private int timerCounter;
     int counter;
     static int numLimes;
 
     public static void youLose() throws IOException {
+        final int resetBtnDimension = 50;
+        final int flagDimension = 44;
+        final int settingsDimension = 36;
         timer.cancel();
         revealAllLimes();
         pane.setStyle("-fx-background-color: rgb(255,97,55);");
@@ -52,12 +55,21 @@ public class LimesweeperApplication extends Application {
             }
         }
         resetBtn.getChildren().clear();
+        resetBtn.getChildren().add(makeImageView("dead_lime.png", resetBtnDimension, resetBtnDimension));
+        flagChangeBtn.getChildren().clear();
+        flagChangeBtn.getChildren()
+                .add(makeImageView("dead_flag_change_" + flagID + ".png", flagDimension, flagDimension));
+        settingsBtn.getChildren().clear();
+        settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
+    }
+
+    public static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) throws IOException {
         Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("dead_lime.png")).openStream());
-        ImageView deadView = new ImageView(image);
-        deadView.setFitHeight(50);
-        deadView.setFitWidth(50);
-        resetBtn.getChildren().add(deadView);
+                LimesweeperApplication.class.getResource(filename)).openStream());
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(xDimension);
+        imageView.setFitHeight(yDimension);
+        return imageView;
     }
 
     private static void revealAllLimes() throws IOException {
@@ -184,13 +196,19 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
-    private void generateFlagChangeBtn(final int xSpacing) throws IOException {
+    private void generateFlagChangeBtn(final int xSpacing, boolean dead) throws IOException {
         final int outerDimension = 44;
         final int ySpacing = 7;
         flagChangeBtn = new StackPane();
         flagChangeBtn.setPrefSize(outerDimension, outerDimension);
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("flag_change_white.png")).openStream());
+        Image image;
+        if (!dead) {
+            image = new Image(Objects.requireNonNull(
+                    LimesweeperApplication.class.getResource("flag_change_" + flagID + ".png")).openStream());
+        } else {
+            image = new Image(Objects.requireNonNull(
+                    LimesweeperApplication.class.getResource("dead_flag_change_" + flagID + ".png")).openStream());
+        }
         ImageView flagView = new ImageView(image);
         flagView.setFitHeight(outerDimension);
         flagView.setFitWidth(outerDimension);
@@ -208,7 +226,7 @@ public class LimesweeperApplication extends Application {
         }
         generateResetBtn();
         generateSettingsBtn(63);
-        generateFlagChangeBtn(63);
+        generateFlagChangeBtn(63, false);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {

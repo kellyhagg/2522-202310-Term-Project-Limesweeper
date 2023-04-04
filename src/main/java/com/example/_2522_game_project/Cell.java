@@ -25,6 +25,7 @@ public class Cell extends StackPane {
     private final int column;
     private boolean isLime;
     private StateType state;
+    private String flagID = "white";
     private int neighbourLimes; // temporarily set to 5 for testing purposes
 
 
@@ -101,12 +102,9 @@ public class Cell extends StackPane {
 
     public void flag(final boolean flagged) throws IOException {
         this.state = StateType.FLAGGED;
-        Image image = new Image(LimesweeperApplication.class.getResource("white_flag.png").openStream());
-        ImageView flagView = new ImageView(image);
-        flagView.setFitWidth(CELL_SIZE - 1);
-        flagView.setFitHeight(CELL_SIZE - 1);
         if (!flagged) {
-            getChildren().add(flagView);
+            getChildren().add(LimesweeperApplication
+                    .makeImageView(flagID + "_flag.png", CELL_SIZE - 1, CELL_SIZE - 1));
             LimesweeperApplication.decreaseFlags();
         } else {
             LimesweeperApplication.increaseFlags();
