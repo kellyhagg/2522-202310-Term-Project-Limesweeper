@@ -1,10 +1,6 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,15 +9,11 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,9 +37,12 @@ public class LimesweeperApplication extends Application {
     private static StackPane flagChangeBtn;
     private static Timer timer;
     private static String flagID = "white";
+
+    private Iterator flagIterator = new InfiniteStringIterator();
     private static Text flags;
     private static int[] timeCounter = {0};
     static int counter;
+    private Difficulty difficulty = Difficulty.MEDIUM;
     static int numLimes;
 
     public static void checkWin(){
@@ -129,6 +124,47 @@ public class LimesweeperApplication extends Application {
             }
         }
     }
+
+    void changeFlag() throws IOException {
+        final int outerDimension = 44;
+        System.out.format("testing\n");
+        flagID = (String) flagIterator.next();
+        flagChangeBtn.getChildren().clear();
+        flagChangeBtn.getChildren().add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
+    }
+
+    public class InfiniteStringIterator implements Iterator<String> {
+        private String[] strings;
+        private int currentIndex;
+
+        public InfiniteStringIterator() {
+            this.strings = new String[]{"white", "red", "blue", "cross", "exclamation"};
+            this.currentIndex = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public String next() {
+            final int size = 5;
+            String nextString = this.strings[this.currentIndex];
+            this.currentIndex = (this.currentIndex + 1) % size;
+            return nextString;
+        }
+    }
+    private static Iterator<String> createFlagIterator() {
+        List<String> stringList = new ArrayList<>();
+        stringList.add("white");
+        stringList.add("red");
+        stringList.add("blue");
+        stringList.add("cross");
+        stringList.add("exclamation");
+        return stringList.iterator();
+    }
+
 
     private void startTimer() {
         timer = new Timer();
@@ -285,10 +321,17 @@ public class LimesweeperApplication extends Application {
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
         pane.getChildren().add(flagChangeBtn);
+        flagChangeBtn.setOnMouseClicked(t -> {
+            try {
+                changeFlag();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void startGame(final Stage stage) throws Exception {
-        createContentPane(stage, Difficulty.MEDIUM);
+        createContentPane(stage, difficulty);
         Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
