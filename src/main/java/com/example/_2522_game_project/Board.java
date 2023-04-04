@@ -1,5 +1,9 @@
 package com.example._2522_game_project;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,12 +22,18 @@ public class Board {
     private final int rows;
     private final int columns;
     private final Cell[][] boardGrid;
+    private static Cell[][] copiedGrid;
+    private static int ROW;
+    private static int COLUMN;
     private final int numLimes;
 
     public Board(final int columns, final int rows, final int numLimes) {
         this.boardGrid = new Cell[columns][rows];
+        copiedGrid = this.boardGrid;
         this.columns = columns;
         this.rows = rows;
+        ROW = rows;
+        COLUMN = columns;
         this.numLimes = numLimes;
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
@@ -162,6 +172,47 @@ public class Board {
             }
         }
         return count;
+    }
+
+    private static int[][] getNeighbours(Cell cell) {
+        int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
+
+        int[][] neighbours = new int[points.length / 2][];
+        int index = 0;
+        for (int i = 0; i < points.length; i ++) {
+            int dx = points[i];
+            int dy = points[++i];
+
+            int newX = cell.getColumn() + dx;
+            int newY = cell.getRow() + dy;
+
+            if (newX >= 0 && newX < COLUMN && newY >= 0 && newY < ROW) {
+                neighbours[index] = new int[] {newX, newY};
+                index += 1;
+            }
+        }
+        return neighbours;
+    }
+
+    public static void openNeighborCells(Cell cell) throws IOException {
+        int x, y;
+        if (cell.getNeighbourLimes() == 0 && !cell.isLime()) {
+            int[][] neighbours = getNeighbours(cell);
+            for(int[] neighbour: neighbours) {
+                if (neighbour != null) {
+                    x = neighbour[0];
+                    y = neighbour[1];
+                    for(int n: neighbour) {
+                        System.out.print(n+" ");
+                    }
+                    System.out.println();
+                    if (copiedGrid[x][y].getState() == StateType.UNOPENED) {
+                        copiedGrid[x][y].testing();
+                        openNeighborCells(copiedGrid[x][y]);
+                    }
+                }
+            }
+        }
     }
 
     public int getRows() {

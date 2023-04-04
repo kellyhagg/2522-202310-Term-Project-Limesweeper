@@ -92,7 +92,7 @@ public class LimesweeperApplication extends Application {
             int timeCounter = 0;
             @Override
             public void run() {
-                System.out.printf("%ds\n", timeCounter);
+//                System.out.printf("%ds\n", timeCounter);
                 time.setText(String.valueOf(timeCounter) + ' ' + 's');
                 timeCounter ++;
             }
