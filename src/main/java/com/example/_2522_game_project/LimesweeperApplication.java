@@ -33,7 +33,9 @@ public class LimesweeperApplication extends Application {
     private static Pane pane;
     private static StackPane resetBtn;
     private static StackPane settingsBtn;
+    private static StackPane flagChangeBtn;
     private static Timer timer;
+    private String flagID = "white";
     private int timerCounter;
     int counter;
 
@@ -150,7 +152,7 @@ public class LimesweeperApplication extends Application {
         resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
-    public void generateSettingsBtn(final int xSpacing) throws IOException {
+    private void generateSettingsBtn(final int xSpacing) throws IOException {
         final int outerDimension = 36;
         final int ySpacing = 11;
         settingsBtn = new StackPane();
@@ -165,6 +167,21 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
+    private void generateFlagChangeBtn(final int xSpacing) throws IOException {
+        final int outerDimension = 44;
+        final int ySpacing = 7;
+        flagChangeBtn = new StackPane();
+        flagChangeBtn.setPrefSize(outerDimension, outerDimension);
+        Image image = new Image(Objects.requireNonNull(
+                LimesweeperApplication.class.getResource("flag_change_white.png")).openStream());
+        ImageView flagView = new ImageView(image);
+        flagView.setFitHeight(outerDimension);
+        flagView.setFitWidth(outerDimension);
+        flagChangeBtn.getChildren().add(flagView);
+        flagChangeBtn.setTranslateX(113);
+        flagChangeBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+    }
+
     private void addContent(final Stage stage, final Difficulty difficulty) throws IOException {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
@@ -174,6 +191,7 @@ public class LimesweeperApplication extends Application {
         }
         generateResetBtn();
         generateSettingsBtn(63);
+        generateFlagChangeBtn(63);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
@@ -186,6 +204,7 @@ public class LimesweeperApplication extends Application {
         });
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
+        pane.getChildren().add(flagChangeBtn);
     }
 
     public void startGame(final Stage stage) throws Exception {
@@ -198,7 +217,7 @@ public class LimesweeperApplication extends Application {
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
     }
 
-    private void stopTimer(WindowEvent event) {
+    private void stopTimer(final WindowEvent event) {
         timer.cancel();
     }
 
