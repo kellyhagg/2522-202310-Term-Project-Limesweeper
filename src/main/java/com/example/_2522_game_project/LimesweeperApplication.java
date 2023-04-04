@@ -14,9 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * Utility class to run the Limesweeper application.
@@ -36,8 +34,10 @@ public class LimesweeperApplication extends Application {
     private static StackPane flagChangeBtn;
     private static Timer timer;
     private static String flagID = "white";
+
+    private Iterator flagIterator = new InfiniteStringIterator();
     private static Text flags;
-    private int timerCounter;
+    private Difficulty difficulty = Difficulty.MEDIUM;
     int counter;
     static int numLimes;
 
@@ -87,6 +87,47 @@ public class LimesweeperApplication extends Application {
             }
         }
     }
+
+    void changeFlag() throws IOException {
+        final int outerDimension = 44;
+        System.out.format("testing\n");
+        flagID = (String) flagIterator.next();
+        flagChangeBtn.getChildren().clear();
+        flagChangeBtn.getChildren().add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
+    }
+
+    public class InfiniteStringIterator implements Iterator<String> {
+        private String[] strings;
+        private int currentIndex;
+
+        public InfiniteStringIterator() {
+            this.strings = new String[]{"white", "red", "blue", "cross", "exclamation"};
+            this.currentIndex = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public String next() {
+            final int size = 5;
+            String nextString = this.strings[this.currentIndex];
+            this.currentIndex = (this.currentIndex + 1) % size;
+            return nextString;
+        }
+    }
+    private static Iterator<String> createFlagIterator() {
+        List<String> stringList = new ArrayList<>();
+        stringList.add("white");
+        stringList.add("red");
+        stringList.add("blue");
+        stringList.add("cross");
+        stringList.add("exclamation");
+        return stringList.iterator();
+    }
+
 
     private void startTimer() {
         timer = new Timer();
@@ -240,10 +281,17 @@ public class LimesweeperApplication extends Application {
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
         pane.getChildren().add(flagChangeBtn);
+        flagChangeBtn.setOnMouseClicked(t -> {
+            try {
+                changeFlag();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void startGame(final Stage stage) throws Exception {
-        createContentPane(stage, Difficulty.MEDIUM);
+        createContentPane(stage, difficulty);
         Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
