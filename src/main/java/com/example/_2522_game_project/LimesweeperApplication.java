@@ -46,9 +46,24 @@ public class LimesweeperApplication extends Application {
 
     public static void checkWin(){
         if (counter == (board.getColumns() * board.getRows())) {
-            System.out.println("All cells are opened.");
             youWin();
         }
+    }
+
+    private static StringBuilder printRanks(List<Person> people) {
+        StringBuilder builder = new StringBuilder();
+        int counter = 0;
+        for (int index = 0; index < people.size(); index++) {
+            if (counter >= 5) {
+                break;
+            } else {
+                builder.append("#").append(index+1).append(": ").append(people.get(index).name())
+                        .append(" - ").append(people.get(index).score()).append("s\n");
+                counter += 1;
+            }
+        }
+
+        return builder;
     }
 
     public static void youWin() {
@@ -62,12 +77,7 @@ public class LimesweeperApplication extends Application {
 
         if (people != null) {
             people.sort(Comparator.comparing(Person::score));
-            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s\n\n#1: "
-                    + people.get(0).name() + " - " + people.get(0).score() + "s\n#2: "
-                    + people.get(1).name() + " - " + people.get(1).score() + "s\n#3: "
-                    + people.get(2).name() + " - " + people.get(2).score() + "s\n#4: "
-                    + people.get(3).name() + " - " + people.get(3).score() + "s\n#5: "
-                    + people.get(4).name() + " - " + people.get(4).score() + "s");
+            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s\n\n" + printRanks(people));
         } else {
             userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s");
         }
