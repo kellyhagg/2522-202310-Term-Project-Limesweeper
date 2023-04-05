@@ -1,6 +1,9 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,6 +12,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -43,6 +47,9 @@ public class LimesweeperApplication extends Application {
     static int counter;
     private Difficulty difficulty = Difficulty.MEDIUM;
     static int numLimes;
+
+    private int startingLimes;
+    private boolean defaultLimes;
 
     public static void checkWin() throws IOException {
         if (counter == (board.getColumns() * board.getRows())) {
@@ -217,16 +224,6 @@ public class LimesweeperApplication extends Application {
             return nextString;
         }
     }
-    private static Iterator<String> createFlagIterator() {
-        List<String> stringList = new ArrayList<>();
-        stringList.add("white");
-        stringList.add("red");
-        stringList.add("blue");
-        stringList.add("cross");
-        stringList.add("exclamation");
-        return stringList.iterator();
-    }
-
 
     private void startTimer() {
         timer = new Timer();
@@ -258,20 +255,27 @@ public class LimesweeperApplication extends Application {
         final int easyNumLimes = 10;
         final int mediumNumLimes = 35;
         final int hardNumLimes = 99;
+        int desiredNumLimes;
+        int columnsRows;
         switch (difficulty) {
             case EASY -> {
-                board = new Board(EASY_COLUMNS_ROWS, EASY_COLUMNS_ROWS, easyNumLimes);
-                pane.setPrefSize(EASY_COLUMNS_ROWS * PANE_SIZE, EASY_COLUMNS_ROWS * PANE_SIZE + barHeight);
+                desiredNumLimes = easyNumLimes;
+                columnsRows = EASY_COLUMNS_ROWS;
             }
             case HARD -> {
-                board = new Board(HARD_COLUMNS_ROWS, HARD_COLUMNS_ROWS, hardNumLimes);
-                pane.setPrefSize(HARD_COLUMNS_ROWS * PANE_SIZE, HARD_COLUMNS_ROWS * PANE_SIZE + barHeight);
+                desiredNumLimes = hardNumLimes;
+                columnsRows = HARD_COLUMNS_ROWS;
             }
             default -> {
-                board = new Board(MEDIUM_COLUMNS_ROWS, MEDIUM_COLUMNS_ROWS, mediumNumLimes);
-                pane.setPrefSize(MEDIUM_COLUMNS_ROWS * PANE_SIZE, MEDIUM_COLUMNS_ROWS * PANE_SIZE + barHeight);
+                desiredNumLimes = mediumNumLimes;
+                columnsRows = MEDIUM_COLUMNS_ROWS;
             }
         }
+        if (!defaultLimes) {
+            desiredNumLimes = startingLimes;
+        }
+        board = new Board(columnsRows, columnsRows, desiredNumLimes);
+        pane.setPrefSize(columnsRows * PANE_SIZE, columnsRows * PANE_SIZE + barHeight);
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
         addContent(stage, difficulty);
     }
@@ -389,6 +393,31 @@ public class LimesweeperApplication extends Application {
                 throw new RuntimeException(e);
             }
         });
+        settingsBtn.setOnMouseClicked(t -> openSettings(stage));
+    }
+
+    private void openSettings(Stage stage) {
+        final int maxLimes = 99;
+        TextInputDialog settingsWindow = new TextInputDialog();
+        settingsWindow.setTitle("Settings");
+        settingsWindow.setContentText("# Limes (max 99): ");
+        settingsWindow.setHeaderText("Difficulty");
+        settingsWindow.setGraphic(null);
+
+        Button okButton = (Button) settingsWindow.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setOnAction(event -> {
+            int desiredNumLimes = Integer.parseInt(settingsWindow.getEditor().getText());
+            if (desiredNumLimes > 0 && desiredNumLimes <= maxLimes) {
+                startingLimes = desiredNumLimes;
+                defaultLimes = false;
+            }
+            try {
+                reset(stage);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Optional<String> result = settingsWindow.showAndWait();
     }
 
     public void startGame(final Stage stage) throws Exception {
@@ -407,6 +436,7 @@ public class LimesweeperApplication extends Application {
 
     @Override
     public void start(final Stage primarystage) throws Exception {
+        defaultLimes = true;
         startGame(primarystage);
     }
 

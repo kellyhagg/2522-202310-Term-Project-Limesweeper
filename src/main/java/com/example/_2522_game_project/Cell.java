@@ -62,7 +62,6 @@ public class Cell extends StackPane {
     }
 
     public void setFlagID(String flagID) {
-        System.out.format("here");
         this.flagID = flagID;
     }
 
