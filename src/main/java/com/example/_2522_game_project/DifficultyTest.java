@@ -1,6 +1,6 @@
 package com.example._2522_game_project;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
 

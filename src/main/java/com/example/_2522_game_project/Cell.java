@@ -1,7 +1,5 @@
 package com.example._2522_game_project;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -19,21 +17,21 @@ import java.io.IOException;
 public class Cell extends StackPane {
     public static final int CELL_SIZE = 24;
     public static final int PANE_SIZE = 27;
-
     public final Rectangle outline = new Rectangle(CELL_SIZE, CELL_SIZE);
     private final int row;
     private final int column;
     private boolean isLime;
     private StateType state;
-    private String flagID = "white";
+    private String flagID;
     private int neighbourLimes; // temporarily set to 5 for testing purposes
 
 
-    public Cell(int column, int row) {
+    public Cell(final int column, final int row) {
         this.row = row;
         this.column = column;
         this.isLime = false;
         this.state = StateType.UNOPENED;
+        this.flagID = "white";
 
         // Set the rectangle outline to green and add to the content pane
         outline.setFill(Color.rgb(221,232,164));
@@ -63,6 +61,11 @@ public class Cell extends StackPane {
         });
     }
 
+    public void setFlagID(String flagID) {
+        System.out.format("here");
+        this.flagID = flagID;
+    }
+
     public void setOutline(Color color) {
         this.outline.setStroke(color);
     }
@@ -90,7 +93,7 @@ public class Cell extends StackPane {
             setText();
         }
         this.state = StateType.OPENED;
-        increaseCounter();;
+        increaseCounter();
         outline.setFill(Color.rgb(107,146,47));
         if (isLime()) {
             LimesweeperApplication.youLose();

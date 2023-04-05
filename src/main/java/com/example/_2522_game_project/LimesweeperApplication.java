@@ -166,7 +166,20 @@ public class LimesweeperApplication extends Application {
     void changeFlag() throws IOException {
         final int outerDimension = 44;
         System.out.format("testing\n");
-        flagID = (String) flagIterator.next();
+        String flagString = (String) flagIterator.next();
+        flagID = flagString;
+        for (Cell[] cells : board.getBoardGrid()) {
+            for (Cell cell : cells) {
+                cell.setFlagID(flagString);
+                if (cell.getState() == StateType.FLAGGED) {
+                    cell.getChildren().clear();
+                    ImageView flag = makeImageView(flagID + "_flag.png", 23, 23);
+                    cell.setOutline(Color.rgb(134,183,62));
+                    cell.getChildren().add(cell.outline);
+                    cell.getChildren().add(flag);
+                }
+            }
+        }
         flagChangeBtn.getChildren().clear();
         flagChangeBtn.getChildren().add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
     }
@@ -176,7 +189,7 @@ public class LimesweeperApplication extends Application {
         private int currentIndex;
 
         public InfiniteStringIterator() {
-            this.strings = new String[]{"white", "red", "blue", "cross", "exclamation"};
+            this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
             this.currentIndex = 0;
         }
 
@@ -310,7 +323,7 @@ public class LimesweeperApplication extends Application {
         settingsView.setFitHeight(outerDimension);
         settingsView.setFitWidth(outerDimension);
         settingsBtn.getChildren().add(settingsView);
-        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2 + xSpacing);
+        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0 + xSpacing);
         settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
     }
 
