@@ -83,7 +83,7 @@ public class Cell extends StackPane {
         }
     }
 
-    private void increaseCounter() {
+    private void increaseCounter() throws IOException {
         LimesweeperApplication.counter += 1;
         LimesweeperApplication.checkWin();
     }

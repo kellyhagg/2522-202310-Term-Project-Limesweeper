@@ -44,7 +44,7 @@ public class LimesweeperApplication extends Application {
     private Difficulty difficulty = Difficulty.MEDIUM;
     static int numLimes;
 
-    public static void checkWin(){
+    public static void checkWin() throws IOException {
         if (counter == (board.getColumns() * board.getRows())) {
             youWin();
         }
@@ -66,7 +66,18 @@ public class LimesweeperApplication extends Application {
         return builder;
     }
 
-    public static void youWin() {
+    public static void youWin() throws IOException {
+        pane.setStyle("-fx-background-color: rgb(221,232,164);");
+        flagChangeBtn.getChildren().clear();
+        settingsBtn.getChildren().clear();
+        resetBtn.getChildren().clear();
+        resetBtn.getChildren().add(makeImageView("reset_sunglasses.png", 50, 50));
+        Cell[][] boardGrid = board.getBoardGrid();
+        for (Cell[] cells : boardGrid) {
+            for (Cell cell : cells) {
+                cell.setOutline(Color.rgb(221,232,164));
+            }
+        }
         timer.cancel();
         TextInputDialog userInput = new TextInputDialog();
         List<Person> people = readFile();
@@ -245,7 +256,7 @@ public class LimesweeperApplication extends Application {
         pane = new Pane();
         final int barHeight = 60;
         final int easyNumLimes = 10;
-        final int mediumNumLimes = 40;
+        final int mediumNumLimes = 35;
         final int hardNumLimes = 99;
         switch (difficulty) {
             case EASY -> {
