@@ -91,7 +91,7 @@ public class LimesweeperApplication extends Application {
 
     private static List<Person> readFile() {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
-        try (Scanner scanner = new Scanner(new File(fileName));) {
+        try (Scanner scanner = new Scanner(new File(fileName))) {
             List<Person> people = new ArrayList<>();
             while (scanner.hasNextLine()) {
                 String name = scanner.nextLine();
@@ -108,7 +108,7 @@ public class LimesweeperApplication extends Application {
     private static void writeToFile(String userName) {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
         try(FileWriter fileWriter = new FileWriter(fileName, true);
-            PrintWriter printWriter = new PrintWriter(fileWriter);) {
+            PrintWriter printWriter = new PrintWriter(fileWriter)) {
             printWriter.println(userName);
             printWriter.println(timeCounter[0]);
         } catch (IOException e) {
