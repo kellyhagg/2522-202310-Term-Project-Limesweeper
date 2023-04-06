@@ -220,7 +220,7 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    private void startTimer() {
+    private void startTimer() throws IOException {
         timer = new Timer();
         Text time = new Text();
         StackPane timeField = new StackPane();
@@ -276,16 +276,18 @@ public class LimesweeperApplication extends Application {
         addContent(stage);
     }
 
-    private void checkNumOfFlags() {
+    private void checkNumOfFlags() throws IOException {
         limeCounter = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
+        ImageView limeImage = makeImageView("lime_counter.png", 64, 40);
+        flagField.getChildren().add(limeImage);
         flagField.setPrefSize(64, 40);
         flagField.setBackground(Background.fill(Color.rgb(87,126,27)));
         flagField.getChildren().add(flags);
         flagField.setTranslateX(12);
         flagField.setTranslateY(btnOffset * PANE_SIZE + 8);
-        flags.setText(limeCounter + "     ");
+        flags.setText(limeCounter + "      ");
         flags.setFont(Font.font("Impact", 22));
         flags.setFill(Color.rgb(241,252,184));
         pane.getChildren().add(flagField);
@@ -340,7 +342,7 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void generateFlagChangeBtn(final int xSpacing, boolean dead) throws IOException {
+    private void generateFlagChangeBtn(final boolean dead) throws IOException {
         final int outerDimension = 44;
         final int ySpacing = 7;
         flagChangeBtn = new StackPane();
@@ -370,7 +372,7 @@ public class LimesweeperApplication extends Application {
         }
         generateResetBtn();
         generateSettingsBtn();
-        generateFlagChangeBtn(63, false);
+        generateFlagChangeBtn(false);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
