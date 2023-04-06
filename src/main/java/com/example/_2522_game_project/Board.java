@@ -27,7 +27,7 @@ public class Board {
     private static int COLUMN;
     private final int numLimes;
 
-    public Board(final int columns, final int rows, final int numLimes) {
+    public Board(final int columns, final int rows, final int numLimes, final String flagID) {
         this.boardGrid = new Cell[columns][rows];
         copiedGrid = this.boardGrid;
         this.columns = columns;
@@ -37,7 +37,7 @@ public class Board {
         this.numLimes = numLimes;
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
-                Cell cell = new Cell(column, row);
+                Cell cell = new Cell(column, row, flagID);
                 boardGrid[column][row] = cell;
             }
         }

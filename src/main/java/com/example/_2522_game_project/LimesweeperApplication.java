@@ -270,7 +270,7 @@ public class LimesweeperApplication extends Application {
         } else {
             numLimes = customNumLimes;
         }
-        board = new Board(btnOffset, btnOffset, numLimes);
+        board = new Board(btnOffset, btnOffset, numLimes, flagID);
         pane.setPrefSize(btnOffset * PANE_SIZE, btnOffset * PANE_SIZE + barHeight);
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
         addContent(stage);

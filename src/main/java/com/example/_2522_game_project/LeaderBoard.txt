@@ -1,12 +1,4 @@
+User1
+344
 Alice
-23
-Kelly
-108
-Kelly
-16
-Kelly
-31
-Bob
-71
-John Cena
-4
+215

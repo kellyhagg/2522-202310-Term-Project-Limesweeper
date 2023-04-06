@@ -26,12 +26,12 @@ public class Cell extends StackPane {
     private int neighbourLimes; // temporarily set to 5 for testing purposes
 
 
-    public Cell(final int column, final int row) {
+    public Cell(final int column, final int row, final String flagID) {
         this.row = row;
         this.column = column;
         this.isLime = false;
         this.state = StateType.UNOPENED;
-        this.flagID = "white";
+        this.flagID = flagID;
 
         // Set the rectangle outline to green and add to the content pane
         outline.setFill(Color.rgb(221,232,164));

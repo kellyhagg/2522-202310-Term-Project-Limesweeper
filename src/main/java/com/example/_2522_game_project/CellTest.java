@@ -7,8 +7,8 @@ import java.io.IOException;
 import static org.testng.AssertJUnit.*;
 
 public class CellTest {
-    Cell cell = new Cell(5, 7);
-    Cell limeCell = new Cell(5, 8);
+    Cell cell = new Cell(5, 7, "white");
+    Cell limeCell = new Cell(5, 8, "white");
 
     @Test
     public void open() {
