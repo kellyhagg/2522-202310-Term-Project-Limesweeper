@@ -248,7 +248,7 @@ public class LimesweeperApplication extends Application {
         pane = new Pane();
         final int barHeight = 60;
         final int easyNumLimes = 10;
-        final int mediumNumLimes = 35;
+        final int mediumNumLimes = 30;
         final int hardNumLimes = 99;
         int desiredNumLimes;
         switch (difficulty) {
