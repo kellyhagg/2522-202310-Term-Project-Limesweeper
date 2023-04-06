@@ -294,16 +294,16 @@ public class LimesweeperApplication extends Application {
     }
 
     public static void decreaseFlags() {
-        limeCounter -=1 ;
-        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
+        limeCounter--;
+        flags.setText(limeCounter + "      ");
     }
 
     public static void increaseFlags() {
-        limeCounter += 1;
-        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
+        limeCounter++;
+        flags.setText(limeCounter + "      ");
     }
 
-    private void reset(Stage stage) throws Exception {
+    private void reset(final Stage stage) throws Exception {
         timer.cancel();
         timeCounter = new int[]{0};
         counter = 0;
@@ -403,7 +403,9 @@ public class LimesweeperApplication extends Application {
         RadioButton hardRadioButton = new RadioButton("Hard");
 
         ToggleGroup difficultyRadioBtn = new ToggleGroup();
-        difficultyRadioBtn.getToggles().addAll(easyRadioButton, mediumRadioButton, hardRadioButton);
+        easyRadioButton.setToggleGroup(difficultyRadioBtn);
+        mediumRadioButton.setToggleGroup(difficultyRadioBtn);
+        hardRadioButton.setToggleGroup(difficultyRadioBtn);
 
         // Set default radio button
         switch (difficulty) {
@@ -411,6 +413,11 @@ public class LimesweeperApplication extends Application {
             case HARD -> hardRadioButton.setSelected(true);
             default -> mediumRadioButton.setSelected(true);
         }
+
+        // Add event listeners to radio buttons
+        easyRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(10));
+        mediumRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(35));
+        hardRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(99));
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -443,10 +450,6 @@ public class LimesweeperApplication extends Application {
             }
         });
         settingsWindow.showAndWait();
-    }
-
-    private void settingsHandler(String result) {
-
     }
 
     public void startGame(final Stage stage) throws Exception {
