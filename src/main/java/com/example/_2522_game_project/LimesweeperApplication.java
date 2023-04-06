@@ -1,9 +1,6 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,9 +23,9 @@ import java.util.*;
  * @version 230321
  */
 public class LimesweeperApplication extends Application {
-    public static final int EASY_COLUMNS_ROWS = 10;
+    public static final int EASY_COLUMNS_ROWS = 12;
     public static final int MEDIUM_COLUMNS_ROWS = 16;
-    public static final int HARD_COLUMNS_ROWS = 24;
+    public static final int HARD_COLUMNS_ROWS = 22;
     public static final int PANE_SIZE = 27;
     static Board board;
     private static Pane pane;
@@ -44,9 +41,10 @@ public class LimesweeperApplication extends Application {
     static int counter;
     private Difficulty difficulty = Difficulty.MEDIUM;
     static int limeCounter;
-    private int customNumLimes = 0;
+    private int customNumLimes;
     private int numLimes;
     private boolean defaultLimes;
+    private int btnOffset;
 
     public static void checkWin() throws IOException {
         if (counter == (board.getColumns() * board.getRows())) {
@@ -226,11 +224,11 @@ public class LimesweeperApplication extends Application {
         timer = new Timer();
         Text time = new Text();
         StackPane timeField = new StackPane();
-        timeField.setPrefSize(65, 40);
+        timeField.setPrefSize(64, 40);
         timeField.setBackground(Background.fill(Color.rgb(87,126,27)));
         timeField.getChildren().add(time);
-        timeField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE  - 80);
-        timeField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
+        timeField.setTranslateX(btnOffset * PANE_SIZE  - 76);
+        timeField.setTranslateY(btnOffset * PANE_SIZE + 8);
         time.setText(String.valueOf(0) + ' ' + 's');
         time.setFont(Font.font("Impact", 22));
         time.setFill(Color.rgb(241,252,184));
@@ -253,19 +251,18 @@ public class LimesweeperApplication extends Application {
         final int mediumNumLimes = 35;
         final int hardNumLimes = 99;
         int desiredNumLimes;
-        int columnsRows;
         switch (difficulty) {
             case EASY -> {
                 desiredNumLimes = easyNumLimes;
-                columnsRows = EASY_COLUMNS_ROWS;
+                btnOffset = EASY_COLUMNS_ROWS;
             }
             case HARD -> {
                 desiredNumLimes = hardNumLimes;
-                columnsRows = HARD_COLUMNS_ROWS;
+                btnOffset = HARD_COLUMNS_ROWS;
             }
             default -> {
                 desiredNumLimes = mediumNumLimes;
-                columnsRows = MEDIUM_COLUMNS_ROWS;
+                btnOffset = MEDIUM_COLUMNS_ROWS;
             }
         }
         if (defaultLimes) {
@@ -273,23 +270,23 @@ public class LimesweeperApplication extends Application {
         } else {
             numLimes = customNumLimes;
         }
-        board = new Board(columnsRows, columnsRows, numLimes);
-        pane.setPrefSize(columnsRows * PANE_SIZE, columnsRows * PANE_SIZE + barHeight);
+        board = new Board(btnOffset, btnOffset, numLimes);
+        pane.setPrefSize(btnOffset * PANE_SIZE, btnOffset * PANE_SIZE + barHeight);
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
-        addContent(stage, difficulty);
+        addContent(stage);
     }
 
     private void checkNumOfFlags() {
         limeCounter = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
-        flagField.setPrefSize(80, 40);
+        flagField.setPrefSize(64, 40);
         flagField.setBackground(Background.fill(Color.rgb(87,126,27)));
         flagField.getChildren().add(flags);
-        flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 65);
-        flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
-        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
-        flags.setFont(Font.font("Impact", 18));
+        flagField.setTranslateX(12);
+        flagField.setTranslateY(btnOffset * PANE_SIZE + 8);
+        flags.setText(limeCounter + "     ");
+        flags.setFont(Font.font("Impact", 22));
         flags.setFill(Color.rgb(241,252,184));
         pane.getChildren().add(flagField);
     }
@@ -314,6 +311,7 @@ public class LimesweeperApplication extends Application {
     private void generateResetBtn() throws IOException {
         final int outerDimension = 50;
         final int ySpacing = 4;
+
         resetBtn = new StackPane();
         resetBtn.setPrefSize(outerDimension, outerDimension);
         Image image = new Image(Objects.requireNonNull(
@@ -322,13 +320,14 @@ public class LimesweeperApplication extends Application {
         resetView.setFitHeight(outerDimension);
         resetView.setFitWidth(outerDimension);
         resetBtn.getChildren().add(resetView);
-        resetBtn.setTranslateX((MEDIUM_COLUMNS_ROWS * PANE_SIZE - outerDimension) / 2.0);
-        resetBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+        resetBtn.setTranslateX((btnOffset * PANE_SIZE - outerDimension) / 2.0);
+        resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void generateSettingsBtn(final int xSpacing) throws IOException {
+    private void generateSettingsBtn() throws IOException {
         final int outerDimension = 36;
         final int ySpacing = 11;
+
         settingsBtn = new StackPane();
         settingsBtn.setPrefSize(outerDimension, outerDimension);
         Image image = new Image(Objects.requireNonNull(
@@ -337,8 +336,8 @@ public class LimesweeperApplication extends Application {
         settingsView.setFitHeight(outerDimension);
         settingsView.setFitWidth(outerDimension);
         settingsBtn.getChildren().add(settingsView);
-        settingsBtn.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 2.0 + xSpacing);
-        settingsBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+        settingsBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 + btnOffset * 3);
+        settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
     private void generateFlagChangeBtn(final int xSpacing, boolean dead) throws IOException {
@@ -358,11 +357,11 @@ public class LimesweeperApplication extends Application {
         flagView.setFitHeight(outerDimension);
         flagView.setFitWidth(outerDimension);
         flagChangeBtn.getChildren().add(flagView);
-        flagChangeBtn.setTranslateX(113);
-        flagChangeBtn.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + ySpacing);
+        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * 3 - outerDimension);
+        flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void addContent(final Stage stage, final Difficulty difficulty) throws IOException {
+    private void addContent(final Stage stage) throws IOException {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
             for (int rows = 0; rows < board.getRows(); rows++) {
@@ -370,7 +369,7 @@ public class LimesweeperApplication extends Application {
             }
         }
         generateResetBtn();
-        generateSettingsBtn(63);
+        generateSettingsBtn();
         generateFlagChangeBtn(63, false);
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
@@ -396,7 +395,7 @@ public class LimesweeperApplication extends Application {
     }
 
     private void openSettings(final Stage stage) {
-        Spinner<Integer> spinner = new Spinner<>(0, 99, numLimes);
+        Spinner<Integer> spinner = new Spinner<>(1, 99, numLimes);
         RadioButton easyRadioButton = new RadioButton("Easy");
         RadioButton mediumRadioButton = new RadioButton("Medium");
         RadioButton hardRadioButton = new RadioButton("Hard");
@@ -426,8 +425,20 @@ public class LimesweeperApplication extends Application {
 
         Button okButton = (Button) settingsWindow.getDialogPane().lookupButton(ButtonType.OK);
         okButton.setOnAction(event -> {
-            System.out.println(spinner.getValue());
-            System.out.println(((RadioButton) difficultyRadioBtn.getSelectedToggle()).getText());
+            String difficultyText = ((RadioButton) difficultyRadioBtn.getSelectedToggle()).getText();
+            int enteredNumLimes = spinner.getValue();
+            if (enteredNumLimes != numLimes) {
+                customNumLimes = enteredNumLimes;
+                defaultLimes = false;
+            }
+            if (Difficulty.valueOf(difficultyText.toUpperCase()) != difficulty) {
+                difficulty = Difficulty.valueOf(difficultyText.toUpperCase());
+            }
+            try {
+                reset(stage);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         });
         settingsWindow.showAndWait();
     }
