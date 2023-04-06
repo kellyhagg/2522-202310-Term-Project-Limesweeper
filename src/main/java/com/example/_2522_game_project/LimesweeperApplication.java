@@ -1,18 +1,15 @@
 package com.example._2522_game_project;
 
 import javafx.application.Application;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextInputDialog;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -46,9 +43,9 @@ public class LimesweeperApplication extends Application {
     private static int[] timeCounter = {0};
     static int counter;
     private Difficulty difficulty = Difficulty.MEDIUM;
-    static int numLimes;
-
-    private int startingLimes;
+    static int limeCounter;
+    private int customNumLimes = 0;
+    private int numLimes;
     private boolean defaultLimes;
 
     public static void checkWin() throws IOException {
@@ -249,7 +246,7 @@ public class LimesweeperApplication extends Application {
         },0, 1000);
         checkNumOfFlags();
     }
-    private void createContentPane(final Stage stage, final Difficulty difficulty) throws IOException {
+    private void createContentPane(final Stage stage) throws IOException {
         pane = new Pane();
         final int barHeight = 60;
         final int easyNumLimes = 10;
@@ -271,17 +268,19 @@ public class LimesweeperApplication extends Application {
                 columnsRows = MEDIUM_COLUMNS_ROWS;
             }
         }
-        if (!defaultLimes) {
-            desiredNumLimes = startingLimes;
+        if (defaultLimes) {
+            numLimes = desiredNumLimes;
+        } else {
+            numLimes = customNumLimes;
         }
-        board = new Board(columnsRows, columnsRows, desiredNumLimes);
+        board = new Board(columnsRows, columnsRows, numLimes);
         pane.setPrefSize(columnsRows * PANE_SIZE, columnsRows * PANE_SIZE + barHeight);
         pane.setStyle("-fx-background-color: rgb(134,183,62);");
         addContent(stage, difficulty);
     }
 
     private void checkNumOfFlags() {
-        numLimes = board.getNumLimes();
+        limeCounter = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
         flagField.setPrefSize(80, 40);
@@ -289,20 +288,20 @@ public class LimesweeperApplication extends Application {
         flagField.getChildren().add(flags);
         flagField.setTranslateX(MEDIUM_COLUMNS_ROWS * PANE_SIZE / 5.5  - 65);
         flagField.setTranslateY(MEDIUM_COLUMNS_ROWS * PANE_SIZE + 8);
-        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
         flags.setFont(Font.font("Impact", 18));
         flags.setFill(Color.rgb(241,252,184));
         pane.getChildren().add(flagField);
     }
 
     public static void decreaseFlags() {
-        numLimes -=1 ;
-        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+        limeCounter -=1 ;
+        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
     }
 
     public static void increaseFlags() {
-        numLimes += 1;
-        flags.setText(String.valueOf(numLimes) + ' ' + "Limes");
+        limeCounter += 1;
+        flags.setText(String.valueOf(limeCounter) + ' ' + "Limes");
     }
 
     private void reset(Stage stage) throws Exception {
@@ -396,32 +395,49 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setOnMouseClicked(t -> openSettings(stage));
     }
 
-    private void openSettings(Stage stage) {
-        final int maxLimes = 99;
-        TextInputDialog settingsWindow = new TextInputDialog();
+    private void openSettings(final Stage stage) {
+        Spinner<Integer> spinner = new Spinner<>(0, 99, numLimes);
+        RadioButton easyRadioButton = new RadioButton("Easy");
+        RadioButton mediumRadioButton = new RadioButton("Medium");
+        RadioButton hardRadioButton = new RadioButton("Hard");
+
+        ToggleGroup difficultyRadioBtn = new ToggleGroup();
+        difficultyRadioBtn.getToggles().addAll(easyRadioButton, mediumRadioButton, hardRadioButton);
+
+        // Set default radio button
+        switch (difficulty) {
+            case EASY -> easyRadioButton.setSelected(true);
+            case HARD -> hardRadioButton.setSelected(true);
+            default -> mediumRadioButton.setSelected(true);
+        }
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Difficulty:"), 0, 0);
+        grid.add(new VBox(5, easyRadioButton, mediumRadioButton, hardRadioButton), 1, 0);
+        grid.add(new Label("Number:"), 0, 1);
+        grid.add(spinner, 1, 1);
+
+        Dialog<String> settingsWindow = new Dialog<>();
         settingsWindow.setTitle("Settings");
-        settingsWindow.setContentText("# Limes (max 99): ");
-        settingsWindow.setHeaderText("Difficulty");
-        settingsWindow.setGraphic(null);
+        settingsWindow.getDialogPane().setContent(grid);
+        settingsWindow.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
         Button okButton = (Button) settingsWindow.getDialogPane().lookupButton(ButtonType.OK);
         okButton.setOnAction(event -> {
-            int desiredNumLimes = Integer.parseInt(settingsWindow.getEditor().getText());
-            if (desiredNumLimes > 0 && desiredNumLimes <= maxLimes) {
-                startingLimes = desiredNumLimes;
-                defaultLimes = false;
-            }
-            try {
-                reset(stage);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            System.out.println(spinner.getValue());
+            System.out.println(((RadioButton) difficultyRadioBtn.getSelectedToggle()).getText());
         });
-        Optional<String> result = settingsWindow.showAndWait();
+        settingsWindow.showAndWait();
+    }
+
+    private void settingsHandler(String result) {
+
     }
 
     public void startGame(final Stage stage) throws Exception {
-        createContentPane(stage, difficulty);
+        createContentPane(stage);
         Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
         stage.setScene(scene);
