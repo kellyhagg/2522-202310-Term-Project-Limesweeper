@@ -1,5 +1,7 @@
 package com.example._2522_game_project;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -7,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * The cell in a board.
@@ -23,7 +26,7 @@ public class Cell extends StackPane {
     private boolean isLime;
     private StateType state;
     private String flagID;
-    private int neighbourLimes; // temporarily set to 5 for testing purposes
+    private int neighbourLimes;
 
 
     public Cell(final int column, final int row, final String flagID) {
@@ -34,8 +37,8 @@ public class Cell extends StackPane {
         this.flagID = flagID;
 
         // Set the rectangle outline to green and add to the content pane
-        outline.setFill(Color.rgb(221,232,164));
-        outline.setStroke(Color.rgb(134,183,62));
+        outline.setFill(LimesweeperApplication.LIGHT_GREEN);
+        outline.setStroke(LimesweeperApplication.BACKGROUND_GREEN);
         getChildren().addAll(outline);
         setTranslateY(row * PANE_SIZE + 1);
         setTranslateX(column * PANE_SIZE + 1);
@@ -61,21 +64,22 @@ public class Cell extends StackPane {
         });
     }
 
-    public void setFlagID(String flagID) {
+    protected void setFlagID(final String flagID) {
         this.flagID = flagID;
     }
 
-    public void setOutline(Color color) {
+    protected void setOutline(final Color color) {
         this.outline.setStroke(color);
     }
 
-    public void setText() {
+    private void setText() {
         if (neighbourLimes != 0) {
+            final int fontSize = 19;
             Text text = new Text(String.valueOf(neighbourLimes));
             final int r = 159 + (16 * neighbourLimes);
             final int g = 207 + (8 * neighbourLimes);
             final int b = 87 + (28 * neighbourLimes);
-            text.setFont(Font.font("Impact", 19));
+            text.setFont(Font.font("Impact", fontSize));
             text.setFill(Color.rgb(r, g, b));
             text.setVisible(true);
             getChildren().add(text);
@@ -87,23 +91,23 @@ public class Cell extends StackPane {
         LimesweeperApplication.checkWin();
     }
 
-    public void openNeighbour() throws IOException {
+    protected void openNeighbour() throws IOException {
         if (neighbourLimes != 0) {
             setText();
         }
         this.state = StateType.OPENED;
         increaseCounter();
-        outline.setFill(Color.rgb(107,146,47));
+        outline.setFill(LimesweeperApplication.OPEN_GREEN);
         if (isLime()) {
             LimesweeperApplication.youLose();
         }
     }
 
-    public void open() throws IOException {
+    protected void open() throws IOException {
         if (state != StateType.LOCKED) {
             setText();
             this.state = StateType.OPENED;
-            outline.setFill(Color.rgb(107,146,47));
+            outline.setFill(LimesweeperApplication.OPEN_GREEN);
             if (isLime()) {
                 LimesweeperApplication.youLose();
             }
@@ -111,51 +115,54 @@ public class Cell extends StackPane {
         }
     }
 
-    public void flag(final boolean flagged) throws IOException {
+    protected void flag(final boolean flagged) throws IOException {
         this.state = StateType.FLAGGED;
         if (!flagged) {
-            getChildren().add(LimesweeperApplication
-                    .makeImageView(flagID + "_flag.png", CELL_SIZE - 1, CELL_SIZE - 1));
+            Image image = new Image(Objects.requireNonNull(
+                    LimesweeperApplication.class.getResource(flagID + "_flag.png")).openStream());
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(CELL_SIZE - 1);
+            imageView.setFitHeight(CELL_SIZE - 1);
+            getChildren().add(imageView);
             LimesweeperApplication.decreaseFlags();
-            LimesweeperApplication.counter += 1;
+            LimesweeperApplication.counter++;
         } else {
             LimesweeperApplication.increaseFlags();
             this.state = StateType.UNOPENED;
-            LimesweeperApplication.counter -= 1;
+            LimesweeperApplication.counter--;
             getChildren().clear();
-            outline.setFill(Color.rgb(221,232,164));
-            outline.setStroke(Color.rgb(134,183,62));
+            outline.setFill(LimesweeperApplication.LIGHT_GREEN);
+            outline.setStroke(LimesweeperApplication.BACKGROUND_GREEN);
             getChildren().addAll(outline);
         }
     }
 
-    public boolean isLime() {
+    protected boolean isLime() {
         return isLime;
     }
 
-    public void setLime(boolean lime) {
+    protected void setLime(final boolean lime) {
         isLime = lime;
     }
 
-
-    public StateType getState() {
+    protected StateType getState() {
         return state;
     }
 
-    public void setState(StateType state) {
+    protected void setState(final StateType state) {
         this.state = state;
     }
 
-    public void setNeighbourLimes(int neighbourLimes) { this.neighbourLimes = neighbourLimes; }
-    public int getNeighbourLimes() {
+    protected void setNeighbourLimes(final int neighbourLimes) { this.neighbourLimes = neighbourLimes; }
+    protected int getNeighbourLimes() {
         return this.neighbourLimes;
     }
 
-    public int getRow() {
+    protected int getRow() {
         return this.row;
     }
 
-    public int getColumn() {
+    protected int getColumn() {
         return this.column;
     }
 }
