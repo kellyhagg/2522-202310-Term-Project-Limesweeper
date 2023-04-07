@@ -12,7 +12,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import java.io.*;
 import java.util.*;
 
@@ -20,13 +19,18 @@ import java.util.*;
  * Utility class to run the Limesweeper application.
  *
  * @author Eunjeong (Alice) Hur, Kelly Hagg
- * @version 230321
+ * @version 230407
  */
 public class LimesweeperApplication extends Application {
     public static final int EASY_COLUMNS_ROWS = 12;
     public static final int MEDIUM_COLUMNS_ROWS = 16;
     public static final int HARD_COLUMNS_ROWS = 22;
     public static final int PANE_SIZE = 27;
+    public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
+    public static final Color LIGHT_GREEN = Color.rgb(221, 232, 164);
+    public static final Color DEAD_RED = Color.rgb(255, 97, 55);
+    public static final Color BACKGROUND_GREEN = Color.rgb(134, 183, 62);
+    public static final Color TEXT_GREEN = Color.rgb(241, 252, 184);
     static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
@@ -77,7 +81,7 @@ public class LimesweeperApplication extends Application {
         Cell[][] boardGrid = board.getBoardGrid();
         for (Cell[] cells : boardGrid) {
             for (Cell cell : cells) {
-                cell.setOutline(Color.rgb(221,232,164));
+                cell.setOutline(LIGHT_GREEN);
             }
         }
         timer.cancel();
@@ -139,7 +143,7 @@ public class LimesweeperApplication extends Application {
         Cell[][] boardGrid = board.getBoardGrid();
         for (Cell[] cells : boardGrid) {
             for (Cell cell : cells) {
-                cell.setOutline(Color.rgb(255,97,55));
+                cell.setOutline(DEAD_RED);
             }
         }
         resetBtn.getChildren().clear();
@@ -151,7 +155,7 @@ public class LimesweeperApplication extends Application {
         settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
     }
 
-    public static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) throws IOException {
+    private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) throws IOException {
         Image image = new Image(Objects.requireNonNull(
                 LimesweeperApplication.class.getResource(filename)).openStream());
         ImageView imageView = new ImageView(image);
@@ -176,9 +180,9 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    void changeFlag() throws IOException {
-        final int outerDimension = 44;
-        System.out.format("testing\n");
+    private void changeFlag() throws IOException {
+        final int flagDimension = 23;
+        final int changeBtnDimension = 44;
         String flagString = (String) flagIterator.next();
         flagID = flagString;
         for (Cell[] cells : board.getBoardGrid()) {
@@ -186,22 +190,23 @@ public class LimesweeperApplication extends Application {
                 cell.setFlagID(flagString);
                 if (cell.getState() == StateType.FLAGGED) {
                     cell.getChildren().clear();
-                    ImageView flag = makeImageView(flagID + "_flag.png", 23, 23);
-                    cell.setOutline(Color.rgb(134,183,62));
+                    ImageView flag = makeImageView(flagID + "_flag.png", flagDimension, flagDimension);
+                    cell.setOutline(BACKGROUND_GREEN);
                     cell.getChildren().add(cell.outline);
                     cell.getChildren().add(flag);
                 }
             }
         }
         flagChangeBtn.getChildren().clear();
-        flagChangeBtn.getChildren().add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
+        flagChangeBtn.getChildren()
+                .add(makeImageView("flag_change_" + flagID + ".png", changeBtnDimension, changeBtnDimension));
     }
 
-    public class InfiniteStringIterator implements Iterator<String> {
-        private String[] strings;
+    private static class InfiniteStringIterator implements Iterator<String> {
+        private final String[] strings;
         private int currentIndex;
 
-        public InfiniteStringIterator() {
+        InfiniteStringIterator() {
             this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
             this.currentIndex = 0;
         }
@@ -221,17 +226,23 @@ public class LimesweeperApplication extends Application {
     }
 
     private void startTimer() throws IOException {
+        final int timerWidth = 64;
+        final int timerHeight = 40;
+        final int xOffset = 76;
+        final int yOffset = 8;
+        final int fontSize = 22;
+        final int period = 1000;
         timer = new Timer();
         Text time = new Text();
         StackPane timeField = new StackPane();
-        timeField.setPrefSize(64, 40);
-        timeField.setBackground(Background.fill(Color.rgb(87,126,27)));
+        timeField.setPrefSize(timerWidth, timerHeight);
+        timeField.setBackground(Background.fill(DARKEST_GREEN));
         timeField.getChildren().add(time);
-        timeField.setTranslateX(btnOffset * PANE_SIZE  - 76);
-        timeField.setTranslateY(btnOffset * PANE_SIZE + 8);
+        timeField.setTranslateX(btnOffset * PANE_SIZE  - xOffset);
+        timeField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
         time.setText(String.valueOf(0) + ' ' + 's');
-        time.setFont(Font.font("Impact", 22));
-        time.setFill(Color.rgb(241,252,184));
+        time.setFont(Font.font("Impact", fontSize));
+        time.setFill(TEXT_GREEN);
         pane.getChildren().add(timeField);
 
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -241,8 +252,8 @@ public class LimesweeperApplication extends Application {
                 time.setText(String.valueOf(timeCounter[0]) + ' ' + 's');
                 timeCounter[0]++;
             }
-        },0, 1000);
-        checkNumOfFlags();
+        }, 0, period);
+        populateCounter();
     }
     private void createContentPane(final Stage stage) throws IOException {
         pane = new Pane();
@@ -254,16 +265,13 @@ public class LimesweeperApplication extends Application {
         switch (difficulty) {
             case EASY -> {
                 desiredNumLimes = easyNumLimes;
-                btnOffset = EASY_COLUMNS_ROWS;
-            }
+                btnOffset = EASY_COLUMNS_ROWS; }
             case HARD -> {
                 desiredNumLimes = hardNumLimes;
-                btnOffset = HARD_COLUMNS_ROWS;
-            }
+                btnOffset = HARD_COLUMNS_ROWS; }
             default -> {
                 desiredNumLimes = mediumNumLimes;
-                btnOffset = MEDIUM_COLUMNS_ROWS;
-            }
+                btnOffset = MEDIUM_COLUMNS_ROWS; }
         }
         if (defaultLimes) {
             numLimes = desiredNumLimes;
@@ -276,29 +284,34 @@ public class LimesweeperApplication extends Application {
         addContent(stage);
     }
 
-    private void checkNumOfFlags() throws IOException {
+    private void populateCounter() throws IOException {
+        final int counterWidth = 64;
+        final int counterHeight = 40;
+        final int xOffset = 12;
+        final int yOffset = 8;
+        final int fontSize = 22;
         limeCounter = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
-        ImageView limeImage = makeImageView("lime_counter.png", 64, 40);
+        ImageView limeImage = makeImageView("lime_counter.png", counterWidth, counterHeight);
         flagField.getChildren().add(limeImage);
-        flagField.setPrefSize(64, 40);
-        flagField.setBackground(Background.fill(Color.rgb(87,126,27)));
+        flagField.setPrefSize(counterWidth, counterHeight);
+        flagField.setBackground(Background.fill(DARKEST_GREEN));
         flagField.getChildren().add(flags);
-        flagField.setTranslateX(12);
-        flagField.setTranslateY(btnOffset * PANE_SIZE + 8);
+        flagField.setTranslateX(xOffset);
+        flagField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
         flags.setText(limeCounter + "      ");
-        flags.setFont(Font.font("Impact", 22));
-        flags.setFill(Color.rgb(241,252,184));
+        flags.setFont(Font.font("Impact", fontSize));
+        flags.setFill(TEXT_GREEN);
         pane.getChildren().add(flagField);
     }
 
-    public static void decreaseFlags() {
+    protected static void decreaseFlags() {
         limeCounter--;
         flags.setText(limeCounter + "      ");
     }
 
-    public static void increaseFlags() {
+    protected static void increaseFlags() {
         limeCounter++;
         flags.setText(limeCounter + "      ");
     }
@@ -316,12 +329,7 @@ public class LimesweeperApplication extends Application {
 
         resetBtn = new StackPane();
         resetBtn.setPrefSize(outerDimension, outerDimension);
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("reset.png")).openStream());
-        ImageView resetView = new ImageView(image);
-        resetView.setFitHeight(outerDimension);
-        resetView.setFitWidth(outerDimension);
-        resetBtn.getChildren().add(resetView);
+        resetBtn.getChildren().add(makeImageView("reset.png", outerDimension, outerDimension));
         resetBtn.setTranslateX((btnOffset * PANE_SIZE - outerDimension) / 2.0);
         resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
@@ -329,37 +337,23 @@ public class LimesweeperApplication extends Application {
     private void generateSettingsBtn() throws IOException {
         final int outerDimension = 36;
         final int ySpacing = 11;
-
+        final int offsetFactor = 3;
         settingsBtn = new StackPane();
         settingsBtn.setPrefSize(outerDimension, outerDimension);
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource("settings.png")).openStream());
-        ImageView settingsView = new ImageView(image);
-        settingsView.setFitHeight(outerDimension);
-        settingsView.setFitWidth(outerDimension);
-        settingsBtn.getChildren().add(settingsView);
-        settingsBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 + btnOffset * 3);
+        settingsBtn.getChildren().add(makeImageView("settings.png", outerDimension, outerDimension));
+        settingsBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 + btnOffset * offsetFactor);
         settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void generateFlagChangeBtn(final boolean dead) throws IOException {
+    private void generateFlagChangeBtn() throws IOException {
         final int outerDimension = 44;
         final int ySpacing = 7;
+        final int offsetFactor = 3;
         flagChangeBtn = new StackPane();
         flagChangeBtn.setPrefSize(outerDimension, outerDimension);
-        Image image;
-        if (!dead) {
-            image = new Image(Objects.requireNonNull(
-                    LimesweeperApplication.class.getResource("flag_change_" + flagID + ".png")).openStream());
-        } else {
-            image = new Image(Objects.requireNonNull(
-                    LimesweeperApplication.class.getResource("dead_flag_change_" + flagID + ".png")).openStream());
-        }
-        ImageView flagView = new ImageView(image);
-        flagView.setFitHeight(outerDimension);
-        flagView.setFitWidth(outerDimension);
-        flagChangeBtn.getChildren().add(flagView);
-        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * 3 - outerDimension);
+        flagChangeBtn.getChildren()
+                .add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
+        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * offsetFactor - outerDimension);
         flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
@@ -372,7 +366,7 @@ public class LimesweeperApplication extends Application {
         }
         generateResetBtn();
         generateSettingsBtn();
-        generateFlagChangeBtn(false);
+        generateFlagChangeBtn();
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
