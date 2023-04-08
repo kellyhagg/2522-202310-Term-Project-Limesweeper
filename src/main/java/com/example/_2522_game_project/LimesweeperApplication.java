@@ -26,11 +26,12 @@ public class LimesweeperApplication extends Application {
     public static final int MEDIUM_COLUMNS_ROWS = 16;
     public static final int HARD_COLUMNS_ROWS = 22;
     public static final int PANE_SIZE = 27;
-    public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
-    public static final Color LIGHT_GREEN = Color.rgb(221, 232, 164);
-    public static final Color DEAD_RED = Color.rgb(255, 97, 55);
-    public static final Color BACKGROUND_GREEN = Color.rgb(134, 183, 62);
     public static final Color TEXT_GREEN = Color.rgb(241, 252, 184);
+    public static final Color LIGHT_GREEN = Color.rgb(221, 232, 164);
+    public static final Color BACKGROUND_GREEN = Color.rgb(134, 183, 62);
+    public static final Color OPEN_GREEN = Color.rgb(107, 146, 47);
+    public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
+    public static final Color DEAD_RED = Color.rgb(255, 97, 55);
     static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
@@ -38,8 +39,7 @@ public class LimesweeperApplication extends Application {
     private static StackPane flagChangeBtn;
     private static Timer timer;
     private static String flagID = "white";
-
-    private Iterator flagIterator = new InfiniteStringIterator();
+    private final Iterator<String> flagIterator = new InfiniteStringIterator();
     private static Text flags;
     private static int[] timeCounter = {0};
     static int counter;
@@ -50,13 +50,13 @@ public class LimesweeperApplication extends Application {
     private boolean defaultLimes;
     private int btnOffset;
 
-    public static void checkWin() throws IOException {
+    public static void checkWin() {
         if (counter == (board.getColumns() * board.getRows())) {
             youWin();
         }
     }
 
-    private static StringBuilder printRanks(List<Person> people) {
+    private static StringBuilder printRanks(final List<Person> people) {
         StringBuilder builder = new StringBuilder();
         int counter = 0;
         for (int index = 0; index < people.size(); index++) {
@@ -72,7 +72,7 @@ public class LimesweeperApplication extends Application {
         return builder;
     }
 
-    public static void youWin() throws IOException {
+    public static void youWin() {
         pane.setStyle("-fx-background-color: rgb(221,232,164);");
         flagChangeBtn.getChildren().clear();
         settingsBtn.getChildren().clear();
@@ -122,9 +122,9 @@ public class LimesweeperApplication extends Application {
         return null;
     }
 
-    private static void writeToFile(String userName) {
+    private static void writeToFile(final String userName) {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
-        try(FileWriter fileWriter = new FileWriter(fileName, true);
+        try (FileWriter fileWriter = new FileWriter(fileName, true);
             PrintWriter printWriter = new PrintWriter(fileWriter)) {
             printWriter.println(userName);
             printWriter.println(timeCounter[0]);
@@ -133,7 +133,7 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    public static void youLose() throws IOException {
+    public static void youLose() {
         final int resetBtnDimension = 50;
         final int flagDimension = 44;
         final int settingsDimension = 36;
@@ -155,32 +155,33 @@ public class LimesweeperApplication extends Application {
         settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
     }
 
-    private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) throws IOException {
-        Image image = new Image(Objects.requireNonNull(
-                LimesweeperApplication.class.getResource(filename)).openStream());
+    private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) {
+        Image image = null;
+        try {
+            image = new Image(Objects.requireNonNull(
+                    LimesweeperApplication.class.getResource(filename)).openStream());
+        } catch (IOException e) {
+            System.out.println("Image attempting to be loaded cannot be found");
+        }
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(xDimension);
         imageView.setFitHeight(yDimension);
         return imageView;
     }
 
-    private static void revealAllLimes() throws IOException {
+    private static void revealAllLimes() {
         for (Cell[] cells : board.getBoardGrid()) {
             for (Cell cell : cells) {
                 if (cell.isLime() && cell.getState() != StateType.FLAGGED) {
-                    Image image = new Image(Objects.requireNonNull(
-                            LimesweeperApplication.class.getResource("lime.png")).openStream());
-                    ImageView limeView = new ImageView(image);
-                    limeView.setFitWidth(Cell.CELL_SIZE - 1);
-                    limeView.setFitHeight(Cell.CELL_SIZE - 1);
-                    cell.getChildren().add(limeView);
+                    cell.getChildren().add(makeImageView("lime.png",
+                            Cell.CELL_SIZE - 1, Cell.CELL_SIZE - 1));
                 }
                 cell.setState(StateType.LOCKED);
             }
         }
     }
 
-    private void changeFlag() throws IOException {
+    private void changeFlag() {
         final int flagDimension = 23;
         final int changeBtnDimension = 44;
         String flagString = (String) flagIterator.next();
@@ -225,7 +226,7 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    private void startTimer() throws IOException {
+    private void startTimer() {
         final int timerWidth = 64;
         final int timerHeight = 40;
         final int xOffset = 76;
@@ -255,7 +256,7 @@ public class LimesweeperApplication extends Application {
         }, 0, period);
         populateCounter();
     }
-    private void createContentPane(final Stage stage) throws IOException {
+    private void createContentPane(final Stage stage) {
         pane = new Pane();
         final int barHeight = 60;
         final int easyNumLimes = 10;
@@ -284,7 +285,7 @@ public class LimesweeperApplication extends Application {
         addContent(stage);
     }
 
-    private void populateCounter() throws IOException {
+    private void populateCounter() {
         final int counterWidth = 64;
         final int counterHeight = 40;
         final int xOffset = 12;
@@ -316,14 +317,14 @@ public class LimesweeperApplication extends Application {
         flags.setText(limeCounter + "      ");
     }
 
-    private void reset(final Stage stage) throws Exception {
+    private void reset(final Stage stage) {
         timer.cancel();
         timeCounter = new int[]{0};
         counter = 0;
         startGame(stage);
     }
 
-    private void generateResetBtn() throws IOException {
+    private void generateResetBtn() {
         final int outerDimension = 50;
         final int ySpacing = 4;
 
@@ -334,7 +335,7 @@ public class LimesweeperApplication extends Application {
         resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void generateSettingsBtn() throws IOException {
+    private void generateSettingsBtn() {
         final int outerDimension = 36;
         final int ySpacing = 11;
         final int offsetFactor = 3;
@@ -345,7 +346,7 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void generateFlagChangeBtn() throws IOException {
+    private void generateFlagChangeBtn() {
         final int outerDimension = 44;
         final int ySpacing = 7;
         final int offsetFactor = 3;
@@ -357,7 +358,7 @@ public class LimesweeperApplication extends Application {
         flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    private void addContent(final Stage stage) throws IOException {
+    private void addContent(final Stage stage) {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
             for (int rows = 0; rows < board.getRows(); rows++) {
@@ -370,28 +371,19 @@ public class LimesweeperApplication extends Application {
         resetBtn.setOnMouseClicked(t -> {
             MouseButton btn = t.getButton();
             if (btn == MouseButton.PRIMARY) {
-                try {
                     reset(stage);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
             }
         });
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
         pane.getChildren().add(flagChangeBtn);
-        flagChangeBtn.setOnMouseClicked(t -> {
-            try {
-                changeFlag();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        flagChangeBtn.setOnMouseClicked(t -> changeFlag());
         settingsBtn.setOnMouseClicked(t -> openSettings(stage));
     }
 
     private void openSettings(final Stage stage) {
-        Spinner<Integer> spinner = new Spinner<>(1, 99, numLimes);
+        final int maxLimes = 99;
+        Spinner<Integer> spinner = new Spinner<>(1,  maxLimes, numLimes);
         RadioButton easyRadioButton = new RadioButton("Easy");
         RadioButton mediumRadioButton = new RadioButton("Medium");
         RadioButton hardRadioButton = new RadioButton("Hard");
@@ -437,16 +429,12 @@ public class LimesweeperApplication extends Application {
             if (Difficulty.valueOf(difficultyText.toUpperCase()) != difficulty) {
                 difficulty = Difficulty.valueOf(difficultyText.toUpperCase());
             }
-            try {
-                reset(stage);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            reset(stage);
         });
         settingsWindow.showAndWait();
     }
 
-    public void startGame(final Stage stage) throws Exception {
+    public void startGame(final Stage stage) {
         createContentPane(stage);
         Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
@@ -461,7 +449,7 @@ public class LimesweeperApplication extends Application {
     }
 
     @Override
-    public void start(final Stage primarystage) throws Exception {
+    public void start(final Stage primarystage) {
         defaultLimes = true;
         startGame(primarystage);
     }
