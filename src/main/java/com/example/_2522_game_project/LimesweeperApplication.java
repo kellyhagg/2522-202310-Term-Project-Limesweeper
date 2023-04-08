@@ -32,6 +32,8 @@ public class LimesweeperApplication extends Application {
     public static final Color OPEN_GREEN = Color.rgb(107, 146, 47);
     public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
     public static final Color DEAD_RED = Color.rgb(255, 97, 55);
+
+    public static final Iterator<String> FLAG_ITERATOR = new InfiniteStringIterator();
     private static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
@@ -41,10 +43,9 @@ public class LimesweeperApplication extends Application {
     private static String flagID = "white";
     private static Text flags;
     private static int[] timeCounter = {0};
-    private static final Iterator<String> FLAG_ITERATOR = new InfiniteStringIterator();
-    private static int counter;
+    private static int flagCounter;
+    private static int limeCounter;
     private Difficulty difficulty = Difficulty.MEDIUM;
-    static int limeCounter;
     private int customNumLimes;
     private int numLimes;
     private boolean defaultLimes;
@@ -52,15 +53,15 @@ public class LimesweeperApplication extends Application {
 
 
     public static int getCounter() {
-        return counter;
+        return limeCounter;
     }
 
     public static void setCounter(final int counter) {
-        LimesweeperApplication.counter = counter;
+        LimesweeperApplication.limeCounter = counter;
     }
 
     public static void checkWin() {
-        if (counter == (board.getColumns() * board.getRows())) {
+        if (limeCounter == (board.getColumns() * board.getRows())) {
             youWin();
         }
     }
@@ -267,34 +268,7 @@ public class LimesweeperApplication extends Application {
         }, 0, period);
         populateCounter();
     }
-    private void createContentPane(final Stage stage) {
-        pane = new Pane();
-        final int barHeight = 60;
-        final int easyNumLimes = 10;
-        final int mediumNumLimes = 30;
-        final int hardNumLimes = 99;
-        int desiredNumLimes;
-        switch (difficulty) {
-            case EASY -> {
-                desiredNumLimes = easyNumLimes;
-                btnOffset = EASY_COLUMNS_ROWS; }
-            case HARD -> {
-                desiredNumLimes = hardNumLimes;
-                btnOffset = HARD_COLUMNS_ROWS; }
-            default -> {
-                desiredNumLimes = mediumNumLimes;
-                btnOffset = MEDIUM_COLUMNS_ROWS; }
-        }
-        if (defaultLimes) {
-            numLimes = desiredNumLimes;
-        } else {
-            numLimes = customNumLimes;
-        }
-        board = new Board(btnOffset, btnOffset, numLimes, flagID);
-        pane.setPrefSize(btnOffset * PANE_SIZE, btnOffset * PANE_SIZE + barHeight);
-        pane.setStyle("-fx-background-color: rgb(134,183,62);");
-        addContent(stage);
-    }
+
 
     private void populateCounter() {
         final int counterWidth = 64;
@@ -302,7 +276,7 @@ public class LimesweeperApplication extends Application {
         final int xOffset = 12;
         final int yOffset = 8;
         final int fontSize = 22;
-        limeCounter = board.getNumLimes();
+        flagCounter = board.getNumLimes();
         flags = new Text();
         StackPane flagField = new StackPane();
         ImageView limeImage = makeImageView("lime_counter.png", counterWidth, counterHeight);
@@ -312,113 +286,41 @@ public class LimesweeperApplication extends Application {
         flagField.getChildren().add(flags);
         flagField.setTranslateX(xOffset);
         flagField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
-        flags.setText(limeCounter + "      ");
+        flags.setText(flagCounter + "      ");
         flags.setFont(Font.font("Impact", fontSize));
         flags.setFill(TEXT_GREEN);
         pane.getChildren().add(flagField);
     }
 
     protected static void decreaseFlags() {
-        limeCounter--;
-        flags.setText(limeCounter + "      ");
+        flagCounter--;
+        flags.setText(flagCounter + "      ");
     }
 
     protected static void increaseFlags() {
-        limeCounter++;
-        flags.setText(limeCounter + "      ");
+        flagCounter++;
+        flags.setText(flagCounter + "      ");
     }
 
     private void reset(final Stage stage) {
         timer.cancel();
         timeCounter = new int[]{0};
-        counter = 0;
+        limeCounter = 0;
         startGame(stage);
     }
 
-    private void generateResetBtn() {
-        final int outerDimension = 50;
-        final int ySpacing = 4;
 
-        resetBtn = new StackPane();
-        resetBtn.setPrefSize(outerDimension, outerDimension);
-        resetBtn.getChildren().add(makeImageView("reset.png", outerDimension, outerDimension));
-        resetBtn.setTranslateX((btnOffset * PANE_SIZE - outerDimension) / 2.0);
-        resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
+
+
+
+
+
+    private void stopTimer(final WindowEvent event) {
+        timer.cancel();
     }
 
-    private void generateSettingsBtn() {
-        final int outerDimension = 36;
-        final int ySpacing = 11;
-        final int offsetFactor = 3;
-        settingsBtn = new StackPane();
-        settingsBtn.setPrefSize(outerDimension, outerDimension);
-        settingsBtn.getChildren().add(makeImageView("settings.png", outerDimension, outerDimension));
-        settingsBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 + btnOffset * offsetFactor);
-        settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
-    }
 
-    private void generateFlagChangeBtn() {
-        final int outerDimension = 44;
-        final int ySpacing = 7;
-        final int offsetFactor = 3;
-        flagChangeBtn = new StackPane();
-        flagChangeBtn.setPrefSize(outerDimension, outerDimension);
-        flagChangeBtn.getChildren()
-                .add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
-        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * offsetFactor - outerDimension);
-        flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
-    }
 
-    private void addContent(final Stage stage) {
-        Cell[][] boardGrid = board.getBoardGrid();
-        for (int columns = 0; columns < board.getColumns(); columns++) {
-            for (int rows = 0; rows < board.getRows(); rows++) {
-                pane.getChildren().add(boardGrid[columns][rows]);
-            }
-        }
-        generateResetBtn();
-        generateSettingsBtn();
-        generateFlagChangeBtn();
-        resetBtn.setOnMouseClicked(t -> {
-            MouseButton btn = t.getButton();
-            if (btn == MouseButton.PRIMARY) {
-                    reset(stage);
-            }
-        });
-        pane.getChildren().add(resetBtn);
-        pane.getChildren().add(settingsBtn);
-        pane.getChildren().add(flagChangeBtn);
-        flagChangeBtn.setOnMouseClicked(t -> changeFlag());
-        settingsBtn.setOnMouseClicked(t -> generateSettings(stage));
-    }
-
-    private void generateSettings(final Stage stage) {
-        final int maxLimes = 99;
-        final int easyLimes = 10;
-        final int mediumLimes = 35;
-        final int hardLimes = 99;
-
-        Spinner<Integer> spinner = new Spinner<>(1,  maxLimes, numLimes);
-        RadioButton easyRadioButton = new RadioButton("Easy");
-        RadioButton mediumRadioButton = new RadioButton("Medium");
-        RadioButton hardRadioButton = new RadioButton("Hard");
-
-        ToggleGroup difficultyRadioBtn = new ToggleGroup();
-        easyRadioButton.setToggleGroup(difficultyRadioBtn);
-        mediumRadioButton.setToggleGroup(difficultyRadioBtn);
-        hardRadioButton.setToggleGroup(difficultyRadioBtn);
-
-        switch (difficulty) {
-            case EASY -> easyRadioButton.setSelected(true);
-            case HARD -> hardRadioButton.setSelected(true);
-            default -> mediumRadioButton.setSelected(true);
-        }
-
-        easyRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(easyLimes));
-        mediumRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(mediumLimes));
-        hardRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(hardLimes));
-        openSettings(stage, easyRadioButton, mediumRadioButton, hardRadioButton, spinner, difficultyRadioBtn);
-    }
 
     private void openSettings(final Stage stage,
                               final RadioButton easyRadioButton,
@@ -457,6 +359,124 @@ public class LimesweeperApplication extends Application {
         settingsWindow.showAndWait();
     }
 
+    private void generateSettingsMenu(final Stage stage) {
+        final int maxLimes = 99;
+        final int easyLimes = 10;
+        final int mediumLimes = 35;
+        final int hardLimes = 99;
+
+        Spinner<Integer> spinner = new Spinner<>(1,  maxLimes, numLimes);
+        RadioButton easyRadioButton = new RadioButton("Easy");
+        RadioButton mediumRadioButton = new RadioButton("Medium");
+        RadioButton hardRadioButton = new RadioButton("Hard");
+
+        ToggleGroup difficultyRadioBtn = new ToggleGroup();
+        easyRadioButton.setToggleGroup(difficultyRadioBtn);
+        mediumRadioButton.setToggleGroup(difficultyRadioBtn);
+        hardRadioButton.setToggleGroup(difficultyRadioBtn);
+
+        switch (difficulty) {
+            case EASY -> easyRadioButton.setSelected(true);
+            case HARD -> hardRadioButton.setSelected(true);
+            default -> mediumRadioButton.setSelected(true);
+        }
+
+        easyRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(easyLimes));
+        mediumRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(mediumLimes));
+        hardRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(hardLimes));
+        openSettings(stage, easyRadioButton, mediumRadioButton, hardRadioButton, spinner, difficultyRadioBtn);
+    }
+
+
+
+    private void generateSettingsBtn() {
+        final int outerDimension = 36;
+        final int ySpacing = 11;
+        final int offsetFactor = 3;
+        settingsBtn = new StackPane();
+        settingsBtn.setPrefSize(outerDimension, outerDimension);
+        settingsBtn.getChildren().add(makeImageView("settings.png", outerDimension, outerDimension));
+        settingsBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 + btnOffset * offsetFactor);
+        settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
+    }
+
+    private void generateFlagChangeBtn() {
+        final int outerDimension = 44;
+        final int ySpacing = 7;
+        final int offsetFactor = 3;
+        flagChangeBtn = new StackPane();
+        flagChangeBtn.setPrefSize(outerDimension, outerDimension);
+        flagChangeBtn.getChildren()
+                .add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
+        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * offsetFactor - outerDimension);
+        flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
+    }
+
+    private void generateResetBtn() {
+        final int outerDimension = 50;
+        final int ySpacing = 4;
+
+        resetBtn = new StackPane();
+        resetBtn.setPrefSize(outerDimension, outerDimension);
+        resetBtn.getChildren().add(makeImageView("reset.png", outerDimension, outerDimension));
+        resetBtn.setTranslateX((btnOffset * PANE_SIZE - outerDimension) / 2.0);
+        resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
+    }
+
+    /**---- CONTENT PANE METHODS ----**/
+
+    private void addContent(final Stage stage) {
+        Cell[][] boardGrid = board.getBoardGrid();
+        for (int columns = 0; columns < board.getColumns(); columns++) {
+            for (int rows = 0; rows < board.getRows(); rows++) {
+                pane.getChildren().add(boardGrid[columns][rows]);
+            }
+        }
+        generateResetBtn();
+        generateSettingsBtn();
+        generateFlagChangeBtn();
+        resetBtn.setOnMouseClicked(t -> {
+            MouseButton btn = t.getButton();
+            if (btn == MouseButton.PRIMARY) {
+                reset(stage);
+            }
+        });
+        pane.getChildren().add(resetBtn);
+        pane.getChildren().add(settingsBtn);
+        pane.getChildren().add(flagChangeBtn);
+        flagChangeBtn.setOnMouseClicked(t -> changeFlag());
+        settingsBtn.setOnMouseClicked(t -> generateSettingsMenu(stage));
+    }
+
+    private void createContentPane(final Stage stage) {
+        pane = new Pane();
+        final int barHeight = 60;
+        final int easyNumLimes = 10;
+        final int mediumNumLimes = 30;
+        final int hardNumLimes = 99;
+        int desiredNumLimes;
+        switch (difficulty) {
+            case EASY -> {
+                desiredNumLimes = easyNumLimes;
+                btnOffset = EASY_COLUMNS_ROWS; }
+            case HARD -> {
+                desiredNumLimes = hardNumLimes;
+                btnOffset = HARD_COLUMNS_ROWS; }
+            default -> {
+                desiredNumLimes = mediumNumLimes;
+                btnOffset = MEDIUM_COLUMNS_ROWS; }
+        }
+        if (defaultLimes) {
+            numLimes = desiredNumLimes;
+        } else {
+            numLimes = customNumLimes;
+        }
+        board = new Board(btnOffset, btnOffset, numLimes, flagID);
+        pane.setPrefSize(btnOffset * PANE_SIZE, btnOffset * PANE_SIZE + barHeight);
+        pane.setStyle("-fx-background-color: rgb(134,183,62);");
+        addContent(stage);
+    }
+
     public void startGame(final Stage stage) {
         createContentPane(stage);
         Scene scene = new Scene(pane);
@@ -465,10 +485,6 @@ public class LimesweeperApplication extends Application {
         stage.show();
         startTimer();
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
-    }
-
-    private void stopTimer(final WindowEvent event) {
-        timer.cancel();
     }
 
     @Override
