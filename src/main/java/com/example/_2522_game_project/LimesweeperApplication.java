@@ -58,14 +58,15 @@ public class LimesweeperApplication extends Application {
 
     private static StringBuilder printRanks(final List<Person> people) {
         StringBuilder builder = new StringBuilder();
-        int counter = 0;
+        int printCounter = 0;
+        final int breakVal = 5;
         for (int index = 0; index < people.size(); index++) {
-            if (counter >= 5) {
+            if (printCounter >= breakVal) {
                 break;
             } else {
-                builder.append("#").append(index+1).append(": ").append(people.get(index).name())
+                builder.append("#").append(index + 1).append(": ").append(people.get(index).name())
                         .append(" - ").append(people.get(index).score()).append("s\n");
-                counter += 1;
+                printCounter++;
             }
         }
 
@@ -73,11 +74,12 @@ public class LimesweeperApplication extends Application {
     }
 
     public static void youWin() {
+        final int outerDimension = 50;
         pane.setStyle("-fx-background-color: rgb(221,232,164);");
         flagChangeBtn.getChildren().clear();
         settingsBtn.getChildren().clear();
         resetBtn.getChildren().clear();
-        resetBtn.getChildren().add(makeImageView("reset_sunglasses.png", 50, 50));
+        resetBtn.getChildren().add(makeImageView("reset_sunglasses.png", outerDimension, outerDimension));
         Cell[][] boardGrid = board.getBoardGrid();
         for (Cell[] cells : boardGrid) {
             for (Cell cell : cells) {
@@ -378,11 +380,15 @@ public class LimesweeperApplication extends Application {
         pane.getChildren().add(settingsBtn);
         pane.getChildren().add(flagChangeBtn);
         flagChangeBtn.setOnMouseClicked(t -> changeFlag());
-        settingsBtn.setOnMouseClicked(t -> openSettings(stage));
+        settingsBtn.setOnMouseClicked(t -> generateSettings(stage));
     }
 
-    private void openSettings(final Stage stage) {
+    private void generateSettings(final Stage stage) {
         final int maxLimes = 99;
+        final int easyLimes = 10;
+        final int mediumLimes = 35;
+        final int hardLimes = 99;
+
         Spinner<Integer> spinner = new Spinner<>(1,  maxLimes, numLimes);
         RadioButton easyRadioButton = new RadioButton("Easy");
         RadioButton mediumRadioButton = new RadioButton("Medium");
@@ -393,23 +399,31 @@ public class LimesweeperApplication extends Application {
         mediumRadioButton.setToggleGroup(difficultyRadioBtn);
         hardRadioButton.setToggleGroup(difficultyRadioBtn);
 
-        // Set default radio button
         switch (difficulty) {
             case EASY -> easyRadioButton.setSelected(true);
             case HARD -> hardRadioButton.setSelected(true);
             default -> mediumRadioButton.setSelected(true);
         }
 
-        // Add event listeners to radio buttons
-        easyRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(10));
-        mediumRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(35));
-        hardRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(99));
+        easyRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(easyLimes));
+        mediumRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(mediumLimes));
+        hardRadioButton.setOnAction(event -> spinner.getValueFactory().setValue(hardLimes));
+        openSettings(stage, easyRadioButton, mediumRadioButton, hardRadioButton, spinner, difficultyRadioBtn);
+    }
 
+    private void openSettings(final Stage stage,
+                              final RadioButton easyRadioButton,
+                              final RadioButton mediumRadioButton,
+                              final RadioButton hardRadioButton,
+                              final Spinner<Integer> spinner,
+                              final ToggleGroup difficultyRadioBtn) {
+        final int vInt = 5;
+        final int gridGap = 10;
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
+        grid.setHgap(gridGap);
+        grid.setVgap(gridGap);
         grid.add(new Label("Difficulty:"), 0, 0);
-        grid.add(new VBox(5, easyRadioButton, mediumRadioButton, hardRadioButton), 1, 0);
+        grid.add(new VBox(vInt, easyRadioButton, mediumRadioButton, hardRadioButton), 1, 0);
         grid.add(new Label("Number:"), 0, 1);
         grid.add(spinner, 1, 1);
 
