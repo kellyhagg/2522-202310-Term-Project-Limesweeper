@@ -51,39 +51,7 @@ public class LimesweeperApplication extends Application {
     private boolean defaultLimes;
     private int btnOffset;
 
-
-    public static int getCounter() {
-        return limeCounter;
-    }
-
-    public static void setCounter(final int counter) {
-        LimesweeperApplication.limeCounter = counter;
-    }
-
-    public static void checkWin() {
-        if (limeCounter == (board.getColumns() * board.getRows())) {
-            youWin();
-        }
-    }
-
-    private static StringBuilder printRanks(final List<Person> people) {
-        StringBuilder builder = new StringBuilder();
-        int printCounter = 0;
-        final int breakVal = 5;
-        for (int index = 0; index < people.size(); index++) {
-            if (printCounter >= breakVal) {
-                break;
-            } else {
-                builder.append("#").append(index + 1).append(": ").append(people.get(index).name())
-                        .append(" - ").append(people.get(index).score()).append("s\n");
-                printCounter++;
-            }
-        }
-
-        return builder;
-    }
-
-    public static void youWin() {
+    private static void youWin() {
         final int outerDimension = 50;
         pane.setStyle("-fx-background-color: rgb(221,232,164);");
         flagChangeBtn.getChildren().clear();
@@ -118,30 +86,21 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    private static List<Person> readFile() {
-        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
-        try (Scanner scanner = new Scanner(new File(fileName))) {
-            List<Person> people = new ArrayList<>();
-            while (scanner.hasNextLine()) {
-                String name = scanner.nextLine();
-                String score = scanner.nextLine();
-                people.add(new Person(name, Integer.parseInt(String.valueOf(score))));
-            }
-            return people;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public static void checkWin() {
+        if (limeCounter == (board.getColumns() * board.getRows())) {
+            youWin();
         }
-        return null;
     }
 
-    private static void writeToFile(final String userName) {
-        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
-        try (FileWriter fileWriter = new FileWriter(fileName, true);
-            PrintWriter printWriter = new PrintWriter(fileWriter)) {
-            printWriter.println(userName);
-            printWriter.println(timeCounter[0]);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static void revealAllLimes() {
+        for (Cell[] cells : board.getBoardGrid()) {
+            for (Cell cell : cells) {
+                if (cell.isLime() && cell.getState() != StateType.FLAGGED) {
+                    cell.getChildren().add(makeImageView("lime.png",
+                            Cell.CELL_SIZE - 1, Cell.CELL_SIZE - 1));
+                }
+                cell.setState(StateType.LOCKED);
+            }
         }
     }
 
@@ -167,29 +126,26 @@ public class LimesweeperApplication extends Application {
         settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
     }
 
-    private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) {
-        Image image = null;
-        try {
-            image = new Image(Objects.requireNonNull(
-                    LimesweeperApplication.class.getResource(filename)).openStream());
-        } catch (IOException e) {
-            System.out.println("Image attempting to be loaded cannot be found");
-        }
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(xDimension);
-        imageView.setFitHeight(yDimension);
-        return imageView;
-    }
+    private static class InfiniteStringIterator implements Iterator<String> {
+        private final String[] strings;
+        private int currentIndex;
 
-    private static void revealAllLimes() {
-        for (Cell[] cells : board.getBoardGrid()) {
-            for (Cell cell : cells) {
-                if (cell.isLime() && cell.getState() != StateType.FLAGGED) {
-                    cell.getChildren().add(makeImageView("lime.png",
-                            Cell.CELL_SIZE - 1, Cell.CELL_SIZE - 1));
-                }
-                cell.setState(StateType.LOCKED);
-            }
+        InfiniteStringIterator() {
+            this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
+            this.currentIndex = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public String next() {
+            final int size = 5;
+            String nextString = this.strings[this.currentIndex];
+            this.currentIndex = (this.currentIndex + 1) % size;
+            return nextString;
         }
     }
 
@@ -215,27 +171,99 @@ public class LimesweeperApplication extends Application {
                 .add(makeImageView("flag_change_" + flagID + ".png", changeBtnDimension, changeBtnDimension));
     }
 
-    private static class InfiniteStringIterator implements Iterator<String> {
-        private final String[] strings;
-        private int currentIndex;
+    protected static void decreaseFlags() {
+        flagCounter--;
+        flags.setText(flagCounter + "      ");
+    }
 
-        InfiniteStringIterator() {
-            this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
-            this.currentIndex = 0;
-        }
+    protected static void increaseFlags() {
+        flagCounter++;
+        flags.setText(flagCounter + "      ");
+    }
 
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
+    public static int getCounter() {
+        return limeCounter;
+    }
 
-        @Override
-        public String next() {
-            final int size = 5;
-            String nextString = this.strings[this.currentIndex];
-            this.currentIndex = (this.currentIndex + 1) % size;
-            return nextString;
+    public static void setCounter(final int counter) {
+        LimesweeperApplication.limeCounter = counter;
+    }
+
+    private void reset(final Stage stage) {
+        timer.cancel();
+        timeCounter = new int[]{0};
+        limeCounter = 0;
+        startGame(stage);
+    }
+
+    private static List<Person> readFile() {
+        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
+        try (Scanner scanner = new Scanner(new File(fileName))) {
+            List<Person> people = new ArrayList<>();
+            while (scanner.hasNextLine()) {
+                String name = scanner.nextLine();
+                String score = scanner.nextLine();
+                people.add(new Person(name, Integer.parseInt(String.valueOf(score))));
+            }
+            return people;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+        return null;
+    }
+
+    private static void writeToFile(final String userName) {
+        String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
+        try (FileWriter fileWriter = new FileWriter(fileName, true);
+             PrintWriter printWriter = new PrintWriter(fileWriter)) {
+            printWriter.println(userName);
+            printWriter.println(timeCounter[0]);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static StringBuilder printRanks(final List<Person> people) {
+        StringBuilder builder = new StringBuilder();
+        int printCounter = 0;
+        final int breakVal = 5;
+        for (int index = 0; index < people.size(); index++) {
+            if (printCounter >= breakVal) {
+                break;
+            } else {
+                builder.append("#").append(index + 1).append(": ").append(people.get(index).name())
+                        .append(" - ").append(people.get(index).score()).append("s\n");
+                printCounter++;
+            }
+        }
+        return builder;
+    }
+
+
+    private void populateCounter() {
+        final int counterWidth = 64;
+        final int counterHeight = 40;
+        final int xOffset = 12;
+        final int yOffset = 8;
+        final int fontSize = 22;
+        flagCounter = board.getNumLimes();
+        flags = new Text();
+        StackPane flagField = new StackPane();
+        ImageView limeImage = makeImageView("lime_counter.png", counterWidth, counterHeight);
+        flagField.getChildren().add(limeImage);
+        flagField.setPrefSize(counterWidth, counterHeight);
+        flagField.setBackground(Background.fill(DARKEST_GREEN));
+        flagField.getChildren().add(flags);
+        flagField.setTranslateX(xOffset);
+        flagField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
+        flags.setText(flagCounter + "      ");
+        flags.setFont(Font.font("Impact", fontSize));
+        flags.setFill(TEXT_GREEN);
+        pane.getChildren().add(flagField);
+    }
+
+    private void stopTimer(final WindowEvent event) {
+        timer.cancel();
     }
 
     private void startTimer() {
@@ -268,59 +296,6 @@ public class LimesweeperApplication extends Application {
         }, 0, period);
         populateCounter();
     }
-
-
-    private void populateCounter() {
-        final int counterWidth = 64;
-        final int counterHeight = 40;
-        final int xOffset = 12;
-        final int yOffset = 8;
-        final int fontSize = 22;
-        flagCounter = board.getNumLimes();
-        flags = new Text();
-        StackPane flagField = new StackPane();
-        ImageView limeImage = makeImageView("lime_counter.png", counterWidth, counterHeight);
-        flagField.getChildren().add(limeImage);
-        flagField.setPrefSize(counterWidth, counterHeight);
-        flagField.setBackground(Background.fill(DARKEST_GREEN));
-        flagField.getChildren().add(flags);
-        flagField.setTranslateX(xOffset);
-        flagField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
-        flags.setText(flagCounter + "      ");
-        flags.setFont(Font.font("Impact", fontSize));
-        flags.setFill(TEXT_GREEN);
-        pane.getChildren().add(flagField);
-    }
-
-    protected static void decreaseFlags() {
-        flagCounter--;
-        flags.setText(flagCounter + "      ");
-    }
-
-    protected static void increaseFlags() {
-        flagCounter++;
-        flags.setText(flagCounter + "      ");
-    }
-
-    private void reset(final Stage stage) {
-        timer.cancel();
-        timeCounter = new int[]{0};
-        limeCounter = 0;
-        startGame(stage);
-    }
-
-
-
-
-
-
-
-    private void stopTimer(final WindowEvent event) {
-        timer.cancel();
-    }
-
-
-
 
     private void openSettings(final Stage stage,
                               final RadioButton easyRadioButton,
@@ -387,7 +362,19 @@ public class LimesweeperApplication extends Application {
         openSettings(stage, easyRadioButton, mediumRadioButton, hardRadioButton, spinner, difficultyRadioBtn);
     }
 
-
+    private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) {
+        Image image = null;
+        try {
+            image = new Image(Objects.requireNonNull(
+                    LimesweeperApplication.class.getResource(filename)).openStream());
+        } catch (IOException e) {
+            System.out.println("Image attempting to be loaded cannot be found");
+        }
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(xDimension);
+        imageView.setFitHeight(yDimension);
+        return imageView;
+    }
 
     private void generateSettingsBtn() {
         final int outerDimension = 36;
