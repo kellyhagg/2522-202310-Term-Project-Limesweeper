@@ -87,7 +87,8 @@ public class Cell extends StackPane {
     }
 
     private void increaseCounter() throws IOException {
-        LimesweeperApplication.counter += 1;
+        int counter = LimesweeperApplication.getCounter();
+        LimesweeperApplication.setCounter(counter + 1);
         LimesweeperApplication.checkWin();
     }
 
@@ -125,11 +126,13 @@ public class Cell extends StackPane {
             imageView.setFitHeight(CELL_SIZE - 1);
             getChildren().add(imageView);
             LimesweeperApplication.decreaseFlags();
-            LimesweeperApplication.counter++;
+            int counter = LimesweeperApplication.getCounter();
+            LimesweeperApplication.setCounter(counter + 1);
         } else {
             LimesweeperApplication.increaseFlags();
             this.state = StateType.UNOPENED;
-            LimesweeperApplication.counter--;
+            int counter = LimesweeperApplication.getCounter();
+            LimesweeperApplication.setCounter(counter - 1);
             getChildren().clear();
             outline.setFill(LimesweeperApplication.LIGHT_GREEN);
             outline.setStroke(LimesweeperApplication.BACKGROUND_GREEN);

@@ -32,23 +32,32 @@ public class LimesweeperApplication extends Application {
     public static final Color OPEN_GREEN = Color.rgb(107, 146, 47);
     public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
     public static final Color DEAD_RED = Color.rgb(255, 97, 55);
-    static Board board;
+    private static Board board;
     private static Pane pane;
     private static StackPane resetBtn;
     private static StackPane settingsBtn;
     private static StackPane flagChangeBtn;
     private static Timer timer;
     private static String flagID = "white";
-    private final Iterator<String> flagIterator = new InfiniteStringIterator();
     private static Text flags;
     private static int[] timeCounter = {0};
-    static int counter;
+    private static final Iterator<String> FLAG_ITERATOR = new InfiniteStringIterator();
+    private static int counter;
     private Difficulty difficulty = Difficulty.MEDIUM;
     static int limeCounter;
     private int customNumLimes;
     private int numLimes;
     private boolean defaultLimes;
     private int btnOffset;
+
+
+    public static int getCounter() {
+        return counter;
+    }
+
+    public static void setCounter(final int counter) {
+        LimesweeperApplication.counter = counter;
+    }
 
     public static void checkWin() {
         if (counter == (board.getColumns() * board.getRows())) {
@@ -186,7 +195,7 @@ public class LimesweeperApplication extends Application {
     private void changeFlag() {
         final int flagDimension = 23;
         final int changeBtnDimension = 44;
-        String flagString = (String) flagIterator.next();
+        String flagString = (String) FLAG_ITERATOR.next();
         flagID = flagString;
         for (Cell[] cells : board.getBoardGrid()) {
             for (Cell cell : cells) {
