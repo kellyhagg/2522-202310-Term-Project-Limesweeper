@@ -16,23 +16,53 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Utility class to run the Limesweeper application.
- *
- * @author Eunjeong (Alice) Hur, Kelly Hagg
- * @version 230407
+ * The type Limesweeper application.
  */
 public class LimesweeperApplication extends Application {
+    /**
+     * The constant EASY_COLUMNS_ROWS.
+     */
     public static final int EASY_COLUMNS_ROWS = 12;
+    /**
+     * The constant MEDIUM_COLUMNS_ROWS.
+     */
     public static final int MEDIUM_COLUMNS_ROWS = 16;
+    /**
+     * The constant HARD_COLUMNS_ROWS.
+     */
     public static final int HARD_COLUMNS_ROWS = 22;
+    /**
+     * The constant PANE_SIZE.
+     */
     public static final int PANE_SIZE = 27;
+    /**
+     * The constant TEXT_GREEN.
+     */
     public static final Color TEXT_GREEN = Color.rgb(241, 252, 184);
+    /**
+     * The constant LIGHT_GREEN.
+     */
     public static final Color LIGHT_GREEN = Color.rgb(221, 232, 164);
+    /**
+     * The constant BACKGROUND_GREEN.
+     */
     public static final Color BACKGROUND_GREEN = Color.rgb(134, 183, 62);
+    /**
+     * The constant OPEN_GREEN.
+     */
     public static final Color OPEN_GREEN = Color.rgb(107, 146, 47);
+    /**
+     * The constant DARKEST_GREEN.
+     */
     public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
+    /**
+     * The constant DEAD_RED.
+     */
     public static final Color DEAD_RED = Color.rgb(255, 97, 55);
 
+    /**
+     * The constant FLAG_ITERATOR.
+     */
     public static final Iterator<String> FLAG_ITERATOR = new InfiniteStringIterator();
     private static Board board;
     private static Pane pane;
@@ -44,13 +74,18 @@ public class LimesweeperApplication extends Application {
     private static Text flags;
     private static int[] timeCounter = {0};
     private static int flagCounter;
-    private static int limeCounter;
+    private static int limeCount;
     private Difficulty difficulty = Difficulty.MEDIUM;
     private int customNumLimes;
     private int numLimes;
     private boolean defaultLimes;
     private int btnOffset;
 
+    // GAME FUNCTION METHODS
+
+    /**
+     * Change the artwork, lock the cells, and display the leaderboard once the game is won.
+     */
     private static void youWin() {
         final int outerDimension = 50;
         pane.setStyle("-fx-background-color: rgb(221,232,164);");
@@ -62,32 +97,18 @@ public class LimesweeperApplication extends Application {
         for (Cell[] cells : boardGrid) {
             for (Cell cell : cells) {
                 cell.setOutline(LIGHT_GREEN);
+                cell.setState(StateType.LOCKED);
             }
         }
         timer.cancel();
-        TextInputDialog userInput = new TextInputDialog();
-        List<Person> people = readFile();
-
-        userInput.setTitle("LeaderBoard");
-        userInput.setContentText("Enter your name to save the score: ");
-        timeCounter[0] = timeCounter[0] - 1;
-
-        if (people != null) {
-            people.sort(Comparator.comparing(Person::score));
-            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s\n\n" + printRanks(people));
-        } else {
-            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s");
-        }
-        userInput.setGraphic(null);
-        Optional<String> result = userInput.showAndWait();
-        if (result.isPresent()) {
-            String user = userInput.getEditor().getText();
-            writeToFile(user);
-        }
+        populateLeaderBoard();
     }
 
-    public static void checkWin() {
-        if (limeCounter == (board.getColumns() * board.getRows())) {
+    /**
+     * Check win.
+     */
+    protected static void checkWin() {
+        if (limeCount == (board.getColumns() * board.getRows())) {
             youWin();
         }
     }
@@ -104,7 +125,10 @@ public class LimesweeperApplication extends Application {
         }
     }
 
-    public static void youLose() {
+    /**
+     * Change the artwork and lock the cells once the game is lost.
+     */
+    protected static void youLose() {
         final int resetBtnDimension = 50;
         final int flagDimension = 44;
         final int settingsDimension = 36;
@@ -126,10 +150,16 @@ public class LimesweeperApplication extends Application {
         settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
     }
 
+    /*
+     * A class that creates an infinite string iterator of the flag label types.
+     */
     private static class InfiniteStringIterator implements Iterator<String> {
         private final String[] strings;
         private int currentIndex;
 
+        /**
+         * Instantiates a new Infinite string iterator for all flag label types.
+         */
         InfiniteStringIterator() {
             this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
             this.currentIndex = 0;
@@ -149,6 +179,9 @@ public class LimesweeperApplication extends Application {
         }
     }
 
+    /*
+     * Toggles the flag icon from the infinite flag iterator.
+     */
     private void changeFlag() {
         final int flagDimension = 23;
         final int changeBtnDimension = 44;
@@ -171,31 +204,55 @@ public class LimesweeperApplication extends Application {
                 .add(makeImageView("flag_change_" + flagID + ".png", changeBtnDimension, changeBtnDimension));
     }
 
+    /**
+     * Decrease flags in flagCounter.
+     */
     protected static void decreaseFlags() {
         flagCounter--;
         flags.setText(flagCounter + "      ");
     }
 
+    /**
+     * Increase flags in flagCounter.
+     */
     protected static void increaseFlags() {
         flagCounter++;
         flags.setText(flagCounter + "      ");
     }
 
+    /**
+     * Gets the number of limes.
+     *
+     * @return the number of limes.
+     */
     public static int getCounter() {
-        return limeCounter;
+        return limeCount;
     }
 
+    /**
+     * Sets the number of limes.
+     *
+     * @param counter the counter
+     */
     public static void setCounter(final int counter) {
-        LimesweeperApplication.limeCounter = counter;
+        limeCount = counter;
     }
 
+    /*
+     * Resets the game inside the current window when the reset button is pressed.
+     */
     private void reset(final Stage stage) {
         timer.cancel();
         timeCounter = new int[]{0};
-        limeCounter = 0;
+        limeCount = 0;
         startGame(stage);
     }
 
+    // LEADERBOARD GENERATOR METHODS
+
+    /*
+     * Reads the current leaders in the LeaderBoard text file.
+     */
     private static List<Person> readFile() {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
         try (Scanner scanner = new Scanner(new File(fileName))) {
@@ -212,6 +269,9 @@ public class LimesweeperApplication extends Application {
         return null;
     }
 
+    /*
+     * Writes new leaders to the LeaderBoard text file.
+     */
     private static void writeToFile(final String userName) {
         String fileName = "src/main/java/com/example/_2522_game_project/LeaderBoard.txt";
         try (FileWriter fileWriter = new FileWriter(fileName, true);
@@ -223,6 +283,9 @@ public class LimesweeperApplication extends Application {
         }
     }
 
+    /*
+     * Generates a StringBuilder of the current ranks in the leaderboard.
+     */
     private static StringBuilder printRanks(final List<Person> people) {
         StringBuilder builder = new StringBuilder();
         int printCounter = 0;
@@ -239,7 +302,36 @@ public class LimesweeperApplication extends Application {
         return builder;
     }
 
+    /*
+     * Populates the leaderboard with the current leaders in the LeaderBoard text file.
+     */
+    private static void populateLeaderBoard() {
+        TextInputDialog userInput = new TextInputDialog();
+        List<Person> people = readFile();
 
+        userInput.setTitle("LeaderBoard");
+        userInput.setContentText("Enter your name to save the score: ");
+        timeCounter[0] = timeCounter[0] - 1;
+
+        if (people != null) {
+            people.sort(Comparator.comparing(Person::score));
+            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s\n\n" + printRanks(people));
+        } else {
+            userInput.setHeaderText("Congratulations!\nYour score: " + timeCounter[0] + "s");
+        }
+        userInput.setGraphic(null);
+        Optional<String> result = userInput.showAndWait();
+        if (result.isPresent()) {
+            String user = userInput.getEditor().getText();
+            writeToFile(user);
+        }
+    }
+
+    // COUNTER AND TIMER METHODS
+
+    /*
+     * Populates the remaining lime counter in the game window.
+     */
     private void populateCounter() {
         final int counterWidth = 64;
         final int counterHeight = 40;
@@ -262,10 +354,16 @@ public class LimesweeperApplication extends Application {
         pane.getChildren().add(flagField);
     }
 
+    /*
+     * Stops the timer.
+     */
     private void stopTimer(final WindowEvent event) {
         timer.cancel();
     }
 
+    /*
+     * Generates a new timer and timer graphics.
+     */
     private void startTimer() {
         final int timerWidth = 64;
         final int timerHeight = 40;
@@ -297,6 +395,11 @@ public class LimesweeperApplication extends Application {
         populateCounter();
     }
 
+    // SETTINGS MENU GENERATOR METHODS
+
+    /*
+     * Populates the settings menu grid and opens the menu to await user input.
+     */
     private void openSettings(final Stage stage,
                               final RadioButton easyRadioButton,
                               final RadioButton mediumRadioButton,
@@ -334,6 +437,9 @@ public class LimesweeperApplication extends Application {
         settingsWindow.showAndWait();
     }
 
+    /*
+     * Generates the radio buttons and spinner for the settings menu.
+     */
     private void generateSettingsMenu(final Stage stage) {
         final int maxLimes = 99;
         final int easyLimes = 10;
@@ -362,6 +468,11 @@ public class LimesweeperApplication extends Application {
         openSettings(stage, easyRadioButton, mediumRadioButton, hardRadioButton, spinner, difficultyRadioBtn);
     }
 
+    // BUTTON GENERATOR METHODS
+
+    /*
+     * Helper method to the button generators to add an image to the Pane.
+     */
     private static ImageView makeImageView(final String filename, final int xDimension, final int yDimension) {
         Image image = null;
         try {
@@ -376,6 +487,9 @@ public class LimesweeperApplication extends Application {
         return imageView;
     }
 
+    /*
+     * Generates the settings button in the correct location for the board size.
+     */
     private void generateSettingsBtn() {
         final int outerDimension = 36;
         final int ySpacing = 11;
@@ -387,6 +501,9 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
+    /*
+     * Generates the flag toggle button in the correct location for the board size.
+     */
     private void generateFlagChangeBtn() {
         final int outerDimension = 44;
         final int ySpacing = 7;
@@ -399,6 +516,9 @@ public class LimesweeperApplication extends Application {
         flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
+    /*
+     * Generates the reset button in the correct location for the board size.
+     */
     private void generateResetBtn() {
         final int outerDimension = 50;
         final int ySpacing = 4;
@@ -410,8 +530,11 @@ public class LimesweeperApplication extends Application {
         resetBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
-    /**---- CONTENT PANE METHODS ----**/
+    // CONTENT PANE GENERATOR METHODS
 
+    /*
+     * Adds the cells and buttons to the content Pane.
+     */
     private void addContent(final Stage stage) {
         Cell[][] boardGrid = board.getBoardGrid();
         for (int columns = 0; columns < board.getColumns(); columns++) {
@@ -435,6 +558,9 @@ public class LimesweeperApplication extends Application {
         settingsBtn.setOnMouseClicked(t -> generateSettingsMenu(stage));
     }
 
+    /*
+     * Generates the content Pane and assigns correct sizing and offsets for the selected Difficulty.
+     */
     private void createContentPane(final Stage stage) {
         pane = new Pane();
         final int barHeight = 60;
@@ -464,7 +590,12 @@ public class LimesweeperApplication extends Application {
         addContent(stage);
     }
 
-    public void startGame(final Stage stage) {
+    // GAME DRIVER METHODS
+
+    /*
+     * Secondary method to launch the game after reset.
+     */
+    private void startGame(final Stage stage) {
         createContentPane(stage);
         Scene scene = new Scene(pane);
         stage.setTitle("Limesweeper");
@@ -474,12 +605,22 @@ public class LimesweeperApplication extends Application {
         stage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::stopTimer);
     }
 
+    /**
+     * Primary method to launch the game.
+     *
+     * @param primaryStage is the primary game Stage.
+     */
     @Override
-    public void start(final Stage primarystage) {
+    public void start(final Stage primaryStage) {
         defaultLimes = true;
-        startGame(primarystage);
+        startGame(primaryStage);
     }
 
+    /**
+     * Main method to launch the game.
+     *
+     * @param args the args.
+     */
     public static void main(final String[] args) {
         launch();
     }
