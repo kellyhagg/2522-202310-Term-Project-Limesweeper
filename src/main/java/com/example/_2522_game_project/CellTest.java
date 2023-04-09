@@ -18,14 +18,10 @@ public class CellTest {
 
     @Test
     public void open() {
-        try {
-            cell.open();
-            StateType expectedStateType = StateType.OPENED;
-            StateType actualStateType = cell.getState();
-            assertEquals(expectedStateType, actualStateType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cell.open();
+        StateType expectedStateType = StateType.OPENED;
+        StateType actualStateType = cell.getState();
+        assertEquals(expectedStateType, actualStateType);
     }
 
     @Test
