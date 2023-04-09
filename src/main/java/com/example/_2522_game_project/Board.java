@@ -1,9 +1,6 @@
 package com.example._2522_game_project;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -13,18 +10,12 @@ import java.util.Random;
  * @version 230408
  */
 public class Board {
-    public int EASY_ROWS = 9; // Kelly will move these/clean these up later
-    public int EASY_COLUMNS = 9;
-    public int MEDIUM_ROWS = 9;
-    public int MEDIUM_COLUMNS = 9;
-    public static final int HARD_COLUMNS = 30;
-    public static final int HARD_ROWS = 16;
-    private final int rows;
-    private final int columns;
-    private final Cell[][] boardGrid;
     private static Cell[][] copiedGrid;
-    private static int ROW;
-    private static int COLUMN;
+    private static int currentColumn;
+    private static int currentRow;
+    private final Cell[][] boardGrid;
+    private final int columns;
+    private final int rows;
     private final int numLimes;
 
     public Board(final int columns, final int rows, final int numLimes, final String flagID) {
@@ -32,8 +23,8 @@ public class Board {
         copiedGrid = this.boardGrid;
         this.columns = columns;
         this.rows = rows;
-        ROW = rows;
-        COLUMN = columns;
+        currentRow = rows;
+        currentColumn = columns;
         this.numLimes = numLimes;
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
@@ -45,12 +36,12 @@ public class Board {
         setNeighbourLimes();
     }
 
-    private void populateLimes(int columns, int rows, int numLimes) {
+    private void populateLimes(final int totalColumns, final int totalRows, final int totalNumLimes) {
         Random rand = new Random();
         int index = 0;
-        while (index < numLimes) {
-            int column = rand.nextInt(columns);
-            int row = rand.nextInt(rows);
+        while (index < totalNumLimes) {
+            int column = rand.nextInt(totalColumns);
+            int row = rand.nextInt(totalRows);
             if (!boardGrid[column][row].isLime()) {
                 boardGrid[column][row].setLime(true);
                 index++;
@@ -70,8 +61,7 @@ public class Board {
                     count = checkLeftLine(row);
                 } else if (col == this.columns-1) { //Check Right Line
                     count = checkRightLine(row);
-                }
-                else {
+                } else {
                     count = checkMiddle(row, col); // Check Middle
                 }
                 boardGrid[col][row].setNeighbourLimes(count);
@@ -79,114 +69,111 @@ public class Board {
         }
     }
 
-    private int checkLeftLine(int row) {
+    private int checkLeftLine(final int row) {
         int count = 0;
-        int [] point = new int[] {-1, 0, -1, 1, 0, 1, 1, 1, 1, 0};
+        int[] point = new int[] {-1, 0, -1, 1, 0, 1, 1, 1, 1, 0};
         int[] leftTop = new int[] {0, 1, 1, 1, 1, 0};
-        int [] leftBottom = new int[] {-1, 0, -1, 1, 0, 1};
+        int[] leftBottom = new int[] {-1, 0, -1, 1, 0, 1};
         if (row == 0) {
-            for (int i = 0; i < leftTop.length - 1; i++) {
-                if (boardGrid[leftTop[i+1]][row + leftTop[i]].isLime()) {
+            for (int index = 0; index < leftTop.length - 1; index++) {
+                if (boardGrid[leftTop[index + 1]][row + leftTop[index]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
-        } else if (row == this.rows -1) {
-            for (int i = 0; i < leftBottom.length - 1; i++) {
-                if (boardGrid[leftBottom[i+1]][row + leftBottom[i]].isLime()) {
+        } else if (row == this.rows - 1) {
+            for (int index = 0; index < leftBottom.length - 1; index++) {
+                if (boardGrid[leftBottom[index + 1]][row + leftBottom[index]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         } else {
-            for (int i = 0; i < point.length - 1; i++) {
-                if (boardGrid[point[i+1]][row  + point[i]].isLime()) {
+            for (int index = 0; index < point.length - 1; index++) {
+                if (boardGrid[point[index + 1]][row  + point[index]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         }
         return count;
     }
 
-    private int checkRightLine(int row) {
-
+    private int checkRightLine(final int row) {
         int count = 0;
-        int [] point = new int[] {0, -1, -1, -1, -1, 0, -1, 1, 0, 1};
+        int[] point = new int[] {0, -1, -1, -1, -1, 0, -1, 1, 0, 1};
         int[] rightTop = new int[] {-1, 0, -1, 1, 0, 1};
-        int [] rightBottom = new int[] {0, -1, -1, -1, -1, 0};
+        int[] rightBottom = new int[] {0, -1, -1, -1, -1, 0};
 
         if (row == 0) {
-            for (int i = 0; i < rightTop.length - 1; i++) {
-                if (boardGrid[this.columns - 1 + rightTop[i]][rightTop[i+1]].isLime()) {
+            for (int index = 0; index < rightTop.length - 1; index++) {
+                if (boardGrid[this.columns - 1 + rightTop[index]][rightTop[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
-        } else if (row == this.rows-1) {
-            for (int i = 0; i < rightBottom.length - 1; i++) {
-                if (boardGrid[this.columns - 1 +  rightBottom[i]][row + rightBottom[i+1]].isLime()) {
+        } else if (row == this.rows - 1) {
+            for (int index = 0; index < rightBottom.length - 1; index++) {
+                if (boardGrid[this.columns - 1 +  rightBottom[index]][row + rightBottom[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         } else {
-            for (int i = 0; i < point.length - 1; i++) {
-                if (boardGrid[this.columns - 1 + point[i]][row + point[i+1]].isLime()) {
+            for (int index = 0; index < point.length - 1; index++) {
+                if (boardGrid[this.columns - 1 + point[index]][row + point[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         }
-
         return count;
     }
 
-    private int checkMiddle(int row, int col){
-
+    private int checkMiddle(final int row, final int col) {
         int count = 0;
         int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
         int[] firstRow = new int[] {-1, 0, -1, 1, 0, 1, 1, 0, 1, 1};
-        int [] lastRow = new int[] {-1, 0, -1, -1, 0, -1, 1, -1, 1, 0};
+        int[] lastRow = new int[] {-1, 0, -1, -1, 0, -1, 1, -1, 1, 0};
 
         if (row == 0) {
-            for (int i = 0; i < firstRow.length - 1; i++) {
-                if (boardGrid[col + firstRow[i]][row + firstRow[i+1]].isLime()) {
+            for (int index = 0; index < firstRow.length - 1; index++) {
+                if (boardGrid[col + firstRow[index]][row + firstRow[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         } else if (row == this.rows - 1) {
-            for (int i = 0; i < lastRow.length - 1; i++) {
-                if (boardGrid[col + lastRow[i]][row + lastRow[i+1]].isLime()) {
+            for (int index = 0; index < lastRow.length - 1; index++) {
+                if (boardGrid[col + lastRow[index]][row + lastRow[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         } else {
-            for (int i = 0; i < points.length - 1; i++) {
-                if (boardGrid[col + points[i]][row + points[i+1]].isLime()) {
+            for (int index = 0; index < points.length - 1; index++) {
+                if (boardGrid[col + points[index]][row + points[index + 1]].isLime()) {
                     count += 1;
                 }
-                i += 1;
+                index++;
             }
         }
         return count;
     }
 
-    private static int[][] getNeighbours(Cell cell) {
+    private static int[][] getNeighbours(final Cell cell) {
         int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
 
         int[][] neighbours = new int[points.length / 2][];
         int index = 0;
-        for (int i = 0; i < points.length; i ++) {
-            int dx = points[i];
-            int dy = points[++i];
+        for (int point = 0; point < points.length; point++) {
+            int dx = points[point];
+            int dy = points[++point];
 
             int newX = cell.getColumn() + dx;
             int newY = cell.getRow() + dy;
 
-            if (newX >= 0 && newX < COLUMN && newY >= 0 && newY < ROW) {
+            if (newX >= 0 && newX < currentColumn && newY >= 0 && newY < currentRow) {
                 neighbours[index] = new int[] {newX, newY};
                 index += 1;
             }
@@ -194,17 +181,18 @@ public class Board {
         return neighbours;
     }
 
-    public static void openNeighborCells(Cell cell) throws IOException {
-        int x, y;
+    public static void openNeighborCells(final Cell cell) throws IOException {
+        int xCoordinate;
+        int yCoordinate;
         if (cell.getNeighbourLimes() == 0 && !cell.isLime()) {
             int[][] neighbours = getNeighbours(cell);
             for(int[] neighbour: neighbours) {
                 if (neighbour != null) {
-                    x = neighbour[0];
-                    y = neighbour[1];
-                    if (copiedGrid[x][y].getState() == StateType.UNOPENED) {
-                        copiedGrid[x][y].openNeighbour();
-                        openNeighborCells(copiedGrid[x][y]);
+                    xCoordinate = neighbour[0];
+                    yCoordinate = neighbour[1];
+                    if (copiedGrid[xCoordinate][yCoordinate].getState() == StateType.UNOPENED) {
+                        copiedGrid[xCoordinate][yCoordinate].openNeighbour();
+                        openNeighborCells(copiedGrid[xCoordinate][yCoordinate]);
                     }
                 }
             }
