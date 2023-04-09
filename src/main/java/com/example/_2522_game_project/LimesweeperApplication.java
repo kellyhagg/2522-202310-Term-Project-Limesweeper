@@ -16,69 +16,86 @@ import java.io.*;
 import java.util.*;
 
 /**
- * The type Limesweeper application.
+ * The Limesweeper Application class.
+ * @author kellyhagg, EunjeongHur
+ * @version 230408
  */
 public class LimesweeperApplication extends Application {
     /**
-     * The constant EASY_COLUMNS_ROWS.
+     * The number of rows and columns for the EASY Difficulty.
      */
     public static final int EASY_COLUMNS_ROWS = 12;
     /**
-     * The constant MEDIUM_COLUMNS_ROWS.
+     * The number of rows and columns for the MEDIUM Difficulty.
      */
     public static final int MEDIUM_COLUMNS_ROWS = 16;
     /**
-     * The constant HARD_COLUMNS_ROWS.
+     * The number of rows and columns for the HARD Difficulty.
      */
     public static final int HARD_COLUMNS_ROWS = 22;
     /**
-     * The constant PANE_SIZE.
+     * The pane size for each cell.
      */
     public static final int PANE_SIZE = 27;
     /**
-     * The constant TEXT_GREEN.
+     * The Color of the timer and counter text.
      */
     public static final Color TEXT_GREEN = Color.rgb(241, 252, 184);
     /**
-     * The constant LIGHT_GREEN.
+     * The Color of the cells.
      */
     public static final Color LIGHT_GREEN = Color.rgb(221, 232, 164);
     /**
-     * The constant BACKGROUND_GREEN.
+     * The Color of the content pane background.
      */
     public static final Color BACKGROUND_GREEN = Color.rgb(134, 183, 62);
     /**
-     * The constant OPEN_GREEN.
+     * The Color of the opened cells.
      */
     public static final Color OPEN_GREEN = Color.rgb(107, 146, 47);
     /**
-     * The constant DARKEST_GREEN.
+     * The Color of the timer and counter backgrounds.
      */
     public static final Color DARKEST_GREEN = Color.rgb(87, 126, 27);
     /**
-     * The constant DEAD_RED.
+     * The Color of the background upon losing the game.
      */
     public static final Color DEAD_RED = Color.rgb(255, 97, 55);
-
     /**
-     * The constant FLAG_ITERATOR.
+     * The iterator that will infinitely loop through the flag label Strings.
      */
     public static final Iterator<String> FLAG_ITERATOR = new InfiniteStringIterator();
+    // The game Board consisting of Cells.
     private static Board board;
+    // The content Pane where all graphics appear.
     private static Pane pane;
+    // The reset button StackPane.
     private static StackPane resetBtn;
+    // The settings button StackPane.
     private static StackPane settingsBtn;
-    private static StackPane flagChangeBtn;
-    private static Timer timer;
+    // The flag toggle button StackPane.
+    private static StackPane flagToggleBtn;
+    // The flagID String set to the starting flag colour.
     private static String flagID = "white";
-    private static Text flags;
+    // The timer in seconds for the player to view their progress.
+    private static Timer timer;
+    // The timer counter integer array.
     private static int[] timeCounter = {0};
+    // The number of flags to be displayed to the player to view their progress.
     private static int flagCounter;
-    private static int limeCount;
+    // The Text of the number of flags to be displayed to the player to view their progress.
+    private static Text flagCounterText;
+    // The number of opened limes.
+    private static int limeCounter;
+    // The Difficulty enum set to the starting Difficulty.
     private Difficulty difficulty = Difficulty.MEDIUM;
+    // The custom number of limes set by the player should they choose.
     private int customNumLimes;
+    // The total number of limes of the current Board.
     private int numLimes;
+    // The boolean to select if the board will be populated with the default or custom lime number.
     private boolean defaultLimes;
+    // The offset of the bottom bar buttons set per the current Difficulty.
     private int btnOffset;
 
     // GAME FUNCTION METHODS
@@ -89,7 +106,7 @@ public class LimesweeperApplication extends Application {
     private static void youWin() {
         final int outerDimension = 50;
         pane.setStyle("-fx-background-color: rgb(221,232,164);");
-        flagChangeBtn.getChildren().clear();
+        flagToggleBtn.getChildren().clear();
         settingsBtn.getChildren().clear();
         resetBtn.getChildren().clear();
         resetBtn.getChildren().add(makeImageView("reset_sunglasses.png", outerDimension, outerDimension));
@@ -108,7 +125,7 @@ public class LimesweeperApplication extends Application {
      * Check win.
      */
     protected static void checkWin() {
-        if (limeCount == (board.getColumns() * board.getRows())) {
+        if (limeCounter == (board.getColumns() * board.getRows())) {
             youWin();
         }
     }
@@ -143,22 +160,22 @@ public class LimesweeperApplication extends Application {
         }
         resetBtn.getChildren().clear();
         resetBtn.getChildren().add(makeImageView("dead_lime.png", resetBtnDimension, resetBtnDimension));
-        flagChangeBtn.getChildren().clear();
-        flagChangeBtn.getChildren()
+        flagToggleBtn.getChildren().clear();
+        flagToggleBtn.getChildren()
                 .add(makeImageView("dead_flag_change_" + flagID + ".png", flagDimension, flagDimension));
         settingsBtn.getChildren().clear();
         settingsBtn.getChildren().add(makeImageView("dead_settings.png", settingsDimension, settingsDimension));
     }
 
     /*
-     * A class that creates an infinite string iterator of the flag label types.
+     * A class that creates an infinite string iterator of the flag label Strings.
      */
     private static class InfiniteStringIterator implements Iterator<String> {
         private final String[] strings;
         private int currentIndex;
 
         /**
-         * Instantiates a new Infinite string iterator for all flag label types.
+         * Instantiates a new Infinite string iterator for all flag label Strings.
          */
         InfiniteStringIterator() {
             this.strings = new String[]{"red", "blue", "cross", "exclamation", "white"};
@@ -182,7 +199,7 @@ public class LimesweeperApplication extends Application {
     /*
      * Toggles the flag icon from the infinite flag iterator.
      */
-    private void changeFlag() {
+    private void toggleFlag() {
         final int flagDimension = 23;
         final int changeBtnDimension = 44;
         String flagString = (String) FLAG_ITERATOR.next();
@@ -199,8 +216,8 @@ public class LimesweeperApplication extends Application {
                 }
             }
         }
-        flagChangeBtn.getChildren().clear();
-        flagChangeBtn.getChildren()
+        flagToggleBtn.getChildren().clear();
+        flagToggleBtn.getChildren()
                 .add(makeImageView("flag_change_" + flagID + ".png", changeBtnDimension, changeBtnDimension));
     }
 
@@ -209,7 +226,7 @@ public class LimesweeperApplication extends Application {
      */
     protected static void decreaseFlags() {
         flagCounter--;
-        flags.setText(flagCounter + "      ");
+        flagCounterText.setText(flagCounter + "      ");
     }
 
     /**
@@ -217,7 +234,7 @@ public class LimesweeperApplication extends Application {
      */
     protected static void increaseFlags() {
         flagCounter++;
-        flags.setText(flagCounter + "      ");
+        flagCounterText.setText(flagCounter + "      ");
     }
 
     /**
@@ -226,7 +243,7 @@ public class LimesweeperApplication extends Application {
      * @return the number of limes.
      */
     public static int getCounter() {
-        return limeCount;
+        return limeCounter;
     }
 
     /**
@@ -235,7 +252,7 @@ public class LimesweeperApplication extends Application {
      * @param counter the counter
      */
     public static void setCounter(final int counter) {
-        limeCount = counter;
+        limeCounter = counter;
     }
 
     /*
@@ -244,7 +261,7 @@ public class LimesweeperApplication extends Application {
     private void reset(final Stage stage) {
         timer.cancel();
         timeCounter = new int[]{0};
-        limeCount = 0;
+        limeCounter = 0;
         startGame(stage);
     }
 
@@ -339,18 +356,18 @@ public class LimesweeperApplication extends Application {
         final int yOffset = 8;
         final int fontSize = 22;
         flagCounter = board.getNumLimes();
-        flags = new Text();
+        flagCounterText = new Text();
         StackPane flagField = new StackPane();
         ImageView limeImage = makeImageView("lime_counter.png", counterWidth, counterHeight);
         flagField.getChildren().add(limeImage);
         flagField.setPrefSize(counterWidth, counterHeight);
         flagField.setBackground(Background.fill(DARKEST_GREEN));
-        flagField.getChildren().add(flags);
+        flagField.getChildren().add(flagCounterText);
         flagField.setTranslateX(xOffset);
         flagField.setTranslateY(btnOffset * PANE_SIZE + yOffset);
-        flags.setText(flagCounter + "      ");
-        flags.setFont(Font.font("Impact", fontSize));
-        flags.setFill(TEXT_GREEN);
+        flagCounterText.setText(flagCounter + "      ");
+        flagCounterText.setFont(Font.font("Impact", fontSize));
+        flagCounterText.setFill(TEXT_GREEN);
         pane.getChildren().add(flagField);
     }
 
@@ -508,12 +525,12 @@ public class LimesweeperApplication extends Application {
         final int outerDimension = 44;
         final int ySpacing = 7;
         final int offsetFactor = 3;
-        flagChangeBtn = new StackPane();
-        flagChangeBtn.setPrefSize(outerDimension, outerDimension);
-        flagChangeBtn.getChildren()
+        flagToggleBtn = new StackPane();
+        flagToggleBtn.setPrefSize(outerDimension, outerDimension);
+        flagToggleBtn.getChildren()
                 .add(makeImageView("flag_change_" + flagID + ".png", outerDimension, outerDimension));
-        flagChangeBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * offsetFactor - outerDimension);
-        flagChangeBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
+        flagToggleBtn.setTranslateX(btnOffset * PANE_SIZE / 2.0 - btnOffset * offsetFactor - outerDimension);
+        flagToggleBtn.setTranslateY(btnOffset * PANE_SIZE + ySpacing);
     }
 
     /*
@@ -553,8 +570,8 @@ public class LimesweeperApplication extends Application {
         });
         pane.getChildren().add(resetBtn);
         pane.getChildren().add(settingsBtn);
-        pane.getChildren().add(flagChangeBtn);
-        flagChangeBtn.setOnMouseClicked(t -> changeFlag());
+        pane.getChildren().add(flagToggleBtn);
+        flagToggleBtn.setOnMouseClicked(t -> toggleFlag());
         settingsBtn.setOnMouseClicked(t -> generateSettingsMenu(stage));
     }
 
