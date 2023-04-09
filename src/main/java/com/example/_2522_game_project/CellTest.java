@@ -6,6 +6,12 @@ import java.io.IOException;
 
 import static org.testng.AssertJUnit.*;
 
+/**
+ * The Cell JUnit test suite.
+ *
+ * @author EunjeongHur
+ * @version 230408
+ */
 public class CellTest {
     Cell cell = new Cell(5, 7, "white");
     Cell limeCell = new Cell(5, 8, "white");

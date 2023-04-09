@@ -2,6 +2,12 @@ package com.example._2522_game_project;
 
 import static org.testng.AssertJUnit.assertEquals;
 
+/**
+ * The Person JUnit test suite.
+ *
+ * @author EunjeongHur
+ * @version 230408
+ */
 public class PersonTest {
     @org.junit.Test
     public void testName() {

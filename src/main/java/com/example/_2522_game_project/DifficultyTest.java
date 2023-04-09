@@ -4,6 +4,12 @@ import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
 
+/**
+ * The Difficulty JUnit test suite.
+ *
+ * @author EunjeongHur
+ * @version 230408
+ */
 public class DifficultyTest {
 
     @Test

@@ -4,6 +4,12 @@ import org.junit.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
 
+/**
+ * The StateType JUnit test suite.
+ *
+ * @author EunjeongHur
+ * @version 230408
+ */
 public class StateTypeTest {
 
     @Test
