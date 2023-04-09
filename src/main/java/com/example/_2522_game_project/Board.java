@@ -1,10 +1,9 @@
 package com.example._2522_game_project;
 
-import java.io.IOException;
 import java.util.Random;
 
 /**
- * The game board.
+ * The game Board.
  *
  * @author kellyhagg, EunjeongHur
  * @version 230408
@@ -18,6 +17,14 @@ public class Board {
     private final int rows;
     private final int numLimes;
 
+    /**
+     * Instantiates a new Board.
+     *
+     * @param columns  the columns.
+     * @param rows     the rows.
+     * @param numLimes the num limes.
+     * @param flagID   the flag id.
+     */
     public Board(final int columns, final int rows, final int numLimes, final String flagID) {
         this.boardGrid = new Cell[columns][rows];
         copiedGrid = this.boardGrid;
@@ -36,6 +43,9 @@ public class Board {
         setNeighbourLimes();
     }
 
+    /*
+    * Randomly populates the boardGrid with the set number of total limes.
+    */
     private void populateLimes(final int totalColumns, final int totalRows, final int totalNumLimes) {
         Random rand = new Random();
         int index = 0;
@@ -49,6 +59,9 @@ public class Board {
         }
     }
 
+    /*
+     * Sets the number of limes surrounding the Cell.
+     */
     private void setNeighbourLimes() {
         for (int col = 0; col < this.columns; col++) {
             for (int row = 0; row < this.rows; row++) {
@@ -59,7 +72,7 @@ public class Board {
                 int count;
                 if (col == 0) { // Check Left Line
                     count = checkLeftLine(row);
-                } else if (col == this.columns-1) { //Check Right Line
+                } else if (col == this.columns - 1) { //Check Right Line
                     count = checkRightLine(row);
                 } else {
                     count = checkMiddle(row, col); // Check Middle
@@ -69,6 +82,9 @@ public class Board {
         }
     }
 
+    /*
+     * Checks the line left of the Cell to see if any are limes.
+     */
     private int checkLeftLine(final int row) {
         int count = 0;
         int[] point = new int[] {-1, 0, -1, 1, 0, 1, 1, 1, 1, 0};
@@ -99,6 +115,9 @@ public class Board {
         return count;
     }
 
+    /*
+     * Checks the line right of the Cell to see if any are limes.
+     */
     private int checkRightLine(final int row) {
         int count = 0;
         int[] point = new int[] {0, -1, -1, -1, -1, 0, -1, 1, 0, 1};
@@ -130,6 +149,9 @@ public class Board {
         return count;
     }
 
+    /*
+     * Checks the current line of the Cell to see if any are limes.
+     */
     private int checkMiddle(final int row, final int col) {
         int count = 0;
         int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
@@ -161,6 +183,9 @@ public class Board {
         return count;
     }
 
+    /*
+     * Gets the neighbour Cells of a Cell.
+     */
     private static int[][] getNeighbours(final Cell cell) {
         int[] points = new int[] {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
 
@@ -181,12 +206,17 @@ public class Board {
         return neighbours;
     }
 
-    public static void openNeighborCells(final Cell cell) throws IOException {
+    /**
+     * Opens the neighbour Cells.
+     *
+     * @param cell the neighbour Cell.
+     */
+    public static void openNeighborCells(final Cell cell) {
         int xCoordinate;
         int yCoordinate;
         if (cell.getNeighbourLimes() == 0 && !cell.isLime()) {
             int[][] neighbours = getNeighbours(cell);
-            for(int[] neighbour: neighbours) {
+            for (int[] neighbour: neighbours) {
                 if (neighbour != null) {
                     xCoordinate = neighbour[0];
                     yCoordinate = neighbour[1];
@@ -199,18 +229,38 @@ public class Board {
         }
     }
 
+    /**
+     * Gets the total rows.
+     *
+     * @return the total rows.
+     */
     public int getRows() {
         return rows;
     }
 
+    /**
+     * Gets the total columns.
+     *
+     * @return the total columns.
+     */
     public int getColumns() {
         return columns;
     }
 
+    /**
+     * Gets the boardGrid of type Cell[][].
+     *
+     * @return the boardGrid of type Cell[][].
+     */
     public Cell[][] getBoardGrid() {
         return boardGrid;
     }
 
+    /**
+     * Gets number of limes.
+     *
+     * @return the number of limes.
+     */
     public int getNumLimes() {
         return numLimes;
     }
