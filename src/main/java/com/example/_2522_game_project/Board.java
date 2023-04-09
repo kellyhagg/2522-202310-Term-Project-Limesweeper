@@ -9,8 +9,8 @@ import java.util.Random;
 /**
  * The game board.
  *
- * @author Eunjeong (Alice) Hur, Kelly Hagg
- * @version 230321
+ * @author kellyhagg, EunjeongHur
+ * @version 230408
  */
 public class Board {
     public int EASY_ROWS = 9; // Kelly will move these/clean these up later

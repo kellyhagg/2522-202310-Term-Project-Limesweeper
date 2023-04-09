@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * The cell in a board.
+ * The Cell of a Board.
  *
- * @author Eunjeong (Alice) Hur, Kelly Hagg
- * @version 230321
+ * @author kellyhagg, EunjeongHur
+ * @version 230408
  */
 public class Cell extends StackPane {
     public static final int CELL_SIZE = 24;
