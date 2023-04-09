@@ -238,18 +238,18 @@ public class LimesweeperApplication extends Application {
     }
 
     /**
-     * Gets the number of limes.
+     * Gets the number of limes for the counter.
      *
-     * @return the number of limes.
+     * @return the number of limes for the counter.
      */
     public static int getCounter() {
         return limeCounter;
     }
 
     /**
-     * Sets the number of limes.
+     * Sets the number of limes for the counter.
      *
-     * @param counter the counter
+     * @param counter the number of limes for the counter.
      */
     public static void setCounter(final int counter) {
         limeCounter = counter;
